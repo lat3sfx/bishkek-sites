@@ -340,7 +340,7 @@ if (location.search.includes('selftest')) {
   T(two.length === 2 && removeItem(two, 'a').length === 1, 'removing an item drops the count');
   T(orderMessage(removeItem(two, 'a')).endsWith('Итого: 2 400 с'), 'total after remove');
   T(addItem(two, {...coat, size:'L'}).length === 2, 'same item twice keeps one piece');
-  T(waLink('a b').endsWith('text=a%20b') && tgLink('a b').startsWith('https://t.me/example?text=a%20b'), 'links');
+  T(waLink('a b').endsWith('text=a%20b') && tgLink('a b') === `https://t.me/${TG}?text=a%20b`, 'links');
   const ids = LOOKS.flatMap(l => l.items.map(i => i.id));
   T(new Set(ids).size === ids.length, 'item ids unique');
   T(LOOKS.every((l, i) => l.items.length >= 2 && I18N.ru['alt' + i] && I18N.kg['alt' + i]), 'looks have items and alt text');
