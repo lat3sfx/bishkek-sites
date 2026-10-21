@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="data:,">
+<title>TOO WEAR: товары</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.4 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#0F1A2A;background:#F2F4F8}
+main{max-width:640px;margin:0 auto;padding:12px 12px 80px}
+h1{font-size:20px;margin:4px 0 12px}
+h2{font-size:18px;margin:0 0 12px}
+button,.btn,input,textarea,select{font:inherit}
+button,.btn{min-height:44px;padding:0 14px;border:1.5px solid #0F1A2A;border-radius:10px;background:#fff;color:#0F1A2A;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.pri{background:#0F1A2A;color:#fff}
+button.danger{border-color:#B3261E;color:#B3261E}
+button[aria-pressed=true]{background:#0F1A2A;color:#fff}
+input[type=text],input[type=password],input:not([type]),textarea{width:100%;min-height:44px;padding:8px 10px;border:1.5px solid #9AA5B5;border-radius:10px;background:#fff;color:inherit}
+input[type=color]{width:52px;height:44px;padding:2px;border:1.5px solid #9AA5B5;border-radius:10px;background:#fff}
+textarea{resize:vertical}
+label.f{display:block;margin:0 0 16px;font-weight:700}
+label.f>input,label.f>textarea{display:block;margin-top:4px;font-weight:400}
+.sec{margin:0 0 16px;padding:12px;background:#fff;border-radius:12px}
+.sec>b{display:block;margin-bottom:6px}
+.err{color:#B3261E;font-weight:400;font-size:14px;min-height:0}
+.err:empty{display:none}
+.err.warn{color:#8A5A00}
+.muted{color:#4B586B;font-size:14px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modes{display:flex;gap:8px;margin-bottom:12px}
+.modes button{flex:1;font-weight:700}
+.banner{padding:12px;border-radius:12px;margin-bottom:12px;background:#FFF3C4}
+.banner.real{background:#D6F0DC}
+.banner p{margin:0 0 8px}
+#msg{position:sticky;top:0;z-index:5;margin:0 0 12px;padding:10px 12px;border-radius:10px;background:#E3EAF7;font-weight:700}
+#msg.ok{background:#D6F0DC}
+#msg.bad{background:#FADAD7;color:#8C1D18}
+ul{list-style:none;margin:0;padding:0}
+.item{display:grid;grid-template-columns:72px 1fr;gap:12px;padding:12px;margin-bottom:10px;background:#fff;border-radius:12px}
+.item.hid{opacity:.7}
+.item img,.ph img{width:72px;height:90px;object-fit:cover;border-radius:8px;background:#E9EEF6;display:block}
+.item .btns{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.item .btns button{flex:1 1 auto;min-width:44px}
+.badge{display:inline-block;padding:0 8px;border-radius:8px;background:#0F1A2A;color:#fff;font-size:13px;margin-left:6px}
+.photos{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.ph{width:92px}
+.ph img{width:92px;height:115px}
+.ph .row{gap:2px;flex-wrap:nowrap}
+.ph button{min-width:0;flex:1;padding:0}
+.ph small{display:block;text-align:center;color:#4B586B}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.chips button{min-width:48px}
+.stock button{font-weight:700;border-color:#1E7B34;color:#1E7B34}
+.stock button[aria-pressed=true]{background:#fff;border-color:#B3261E;color:#B3261E;text-decoration:line-through}
+.crow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #E3E7EE}
+.crow input[type=text]{flex:1 1 140px;width:auto}
+.crow img{width:44px;height:55px;object-fit:cover;border-radius:6px}
+.sticky{position:sticky;bottom:0;display:flex;gap:8px;padding:10px 0;background:#F2F4F8}
+.sticky button{flex:1}
+details{margin-top:8px}
+summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700}
+ol{margin:6px 0;padding-left:20px}
+</style>
+</head>
+<body>
+<main>
+  <h1>TOO WEAR: товары</h1>
+  <div id="msg" role="status" hidden></div>
+  <div id="app"></div>
+</main>
+<script>
+/* ---------- config ---------- */
+const OWNER = 'lat3sfx', REPO = 'bishkek-sites', BRANCH = 'main', DIR = 'toowear';
+const K_TOKEN = 'toowear-gh-token', K_DEMO = 'toowear-demo', K_DRAFT = 'toowear-gh-draft';
+const MAX_SIDE = 1200, MAX_FILE = 15 * 1024 * 1024;
+
+/* ---------- pure logic (checked by ?selftest) ---------- */
+const esc = v => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const PRESETS = ['XS','S','M','L','XL','XXL'], PAIRS = ['S/M','L/XL'], NUMS = ['36','38','40','42','44','46'];
+const ORDER = [...PRESETS, ...PAIRS, ...NUMS];
+const normSize = s => String(s).trim().replace(/\s+/g, ' ').toUpperCase().slice(0, 12);
+const sortSizes = list => {
+  const rank = s => { const i = ORDER.indexOf(s); return i < 0 ? 1000 : i; };
+  return [...new Set(list.map(normSize).filter(Boolean))].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+};
+const parsePrice = v => { const d = String(v == null ? '' : v).replace(/\D/g, '').slice(0, 7); return d ? +d : 0; };
+const rand = () => Math.random().toString(36).slice(2, 8);
+const newId = () => 'p' + rand();
+const imagePath = (id, r, ext = 'webp') => `img/u-${String(id).replace(/[^a-z0-9-]/gi, '')}-${r}.${ext}`;
+const okPath = s => typeof s === 'string' && (/^img\/\w[\w.\-]*$/.test(s) || /^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(s));
+/* editor draft or loaded product -> clean product for products.json */
+function toProduct(p) {
+  const sizes = sortSizes(Array.isArray(p.sizes) ? p.sizes : []);
+  return {
+    id: String(p.id), name: String(p.name || '').trim(), price: parsePrice(p.price), description: String(p.description || '').trim(),
+    images: (p.images || []).filter(okPath), sizes,
+    out: sortSizes(p.out || []).filter(s => sizes.includes(s)),
+    colors: (p.colors || []).map(c => ({name: String(c.name || '').trim().slice(0, 40),
+      hex: /^#[0-9a-f]{6}$/i.test(c.hex) ? c.hex : '#A9AFB8', img: okPath(c.img) ? c.img : ''})).filter(c => c.name),
+    hidden: p.hidden === true
+  };
+}
+const productsJson = list => JSON.stringify({products: list}, null, 1) + '\n';
+function validate(p) {
+  const errors = {}, warnings = {};
+  if (!String(p.name || '').trim()) errors.name = 'Введите название товара.';
+  if (!(parsePrice(p.price) > 0)) errors.price = 'Введите цену цифрами, например 1500.';
+  if (!(p.images || []).length) errors.photos = 'Добавьте хотя бы одно фото.';
+  const sizes = sortSizes(p.sizes || []);
+  if (!sizes.length) errors.sizes = 'Выберите хотя бы один размер.';
+  else if (sizes.every(s => (p.out || []).includes(s))) warnings.sizes = 'Все размеры отмечены «нет в наличии»: заказать этот товар на сайте будет нельзя.';
+  return {errors, warnings};
+}
+const inStock = p => p.sizes.filter(s => !p.out.includes(s));
+const thumb = s => /^data:/.test(s) ? s : '../' + s;
+
+/* ---------- GitHub ---------- */
+const REPO_API = `/repos/${OWNER}/${REPO}`;
+async function gh(token, path, o = {}) {
+  let r;
+  try {
+    r = await fetch('https://api.github.com' + path, {
+      method: o.method || 'GET', cache: 'no-store',
+      headers: Object.assign({Authorization: 'Bearer ' + token, Accept: o.accept || 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'}, o.body ? {'Content-Type': 'application/json'} : {}),
+      body: o.body ? JSON.stringify(o.body) : undefined
+    });
+  } catch (e) { const x = new Error('network'); x.status = 0; throw x; }
+  if (!r.ok) { const x = new Error('http ' + r.status); x.status = r.status; throw x; }
+  return o.raw ? r.text() : r.json();
+}
+function ghError(e) {
+  return ({
+    0: 'Нет связи с GitHub. Проверьте интернет и попробуйте ещё раз. Изменения сохранены в черновике.',
+    401: 'Ключ не подходит или устарел. Создайте новый ключ и вставьте его заново.',
+    403: 'У ключа нет прав записи (нужно Contents: Read and write) или превышен лимит запросов. Проверьте права ключа.',
+    404: 'Не найден репозиторий ' + REPO + ' или файл. Проверьте, что ключ выдан именно на репозиторий ' + REPO + '.',
+    409: 'Сайт изменился, пока вы работали. Нажмите «Загрузить с сайта заново» и повторите (черновик будет сброшен).',
+    422: 'Сайт изменился, пока вы работали. Нажмите «Загрузить с сайта заново» и повторите (черновик будет сброшен).'
+  })[e.status] || 'Не получилось (ошибка ' + e.status + '). Черновик сохранён.';
+}
+/* One commit: new photos + products.json. Returns the products with data: photos replaced by their new paths. */
+async function publish(products, token) {
+  const g = REPO_API + '/git', list = JSON.parse(JSON.stringify(products)), files = [];
+  const conv = (src, id) => {
+    const m = /^data:image\/(webp|jpeg|png);base64,(.+)$/.exec(src || '');
+    if (!m) return src;
+    const path = imagePath(id, rand(), m[1] === 'jpeg' ? 'jpg' : m[1]);
+    files.push({path: `${DIR}/${path}`, content: m[2], encoding: 'base64'});
+    return path;
+  };
+  list.forEach(p => { p.images = p.images.map(s => conv(s, p.id)); p.colors.forEach(c => { if (c.img) c.img = conv(c.img, p.id); }); });
+  files.push({path: `${DIR}/products.json`, content: productsJson(list), encoding: 'utf-8'});
+  const head = (await gh(token, `${g}/ref/heads/${BRANCH}`)).object.sha;
+  const base = (await gh(token, `${g}/commits/${head}`)).tree.sha;
+  const tree = [];
+  for (const f of files) {
+    const b = await gh(token, `${g}/blobs`, {method: 'POST', body: {content: f.content, encoding: f.encoding}});
+    tree.push({path: f.path, mode: '100644', type: 'blob', sha: b.sha});
+  }
+  const t = await gh(token, `${g}/trees`, {method: 'POST', body: {base_tree: base, tree}});
+  const c = await gh(token, `${g}/commits`, {method: 'POST', body: {message: 'Обновление товаров', tree: t.sha, parents: [head]}});
+  // force:false -> GitHub refuses (422) if the branch moved since we read it
+  await gh(token, `${g}/refs/heads/${BRANCH}`, {method: 'PATCH', body: {sha: c.sha, force: false}});
+  return list;
+}
+
+/* ---------- selftest ---------- */
+async function selftest() {
+  let bad = 0;
+  const t = (ok, msg) => { if (!ok) { bad++; console.error('FAIL: ' + msg); } };
+  const evil = `<img src=x onerror=alert(1)>"'&`;
+  t(!/[<>"']/.test(esc(evil)) && esc(evil).startsWith('&lt;img'), 'esc');
+  t(JSON.stringify(sortSizes(['xl', ' m ', 'M', '40', 'Мой', 's/m', 'S'])) === JSON.stringify(['S', 'M', 'XL', 'S/M', '40', 'МОЙ']), 'sortSizes ' + sortSizes(['xl', ' m ', 'M', '40', 'Мой', 's/m', 'S']));
+  t(normSize('  xl  ') === 'XL' && normSize('   ') === '', 'normSize');
+  t(parsePrice('3 900 с') === 3900 && parsePrice('abc') === 0 && parsePrice('12345678901') === 1234567, 'parsePrice');
+  t(imagePath('zip', 'ab12') === 'img/u-zip-ab12.webp' && imagePath('a/../b', 'x') === 'img/u-ab-x.webp', 'imagePath');
+  const ok = {name: ' Худи ', price: '1 500', images: ['img/a.webp'], sizes: ['M', 'S'], out: ['S']};
+  t(Object.keys(validate(ok).errors).length === 0 && !validate(ok).warnings.sizes, 'valid product');
+  const v = validate({name: ' ', price: '0', images: [], sizes: []}).errors;
+  t(v.name && v.price && v.photos && v.sizes, 'validate finds all errors');
+  t(validate({...ok, out: ['S', 'M']}).warnings.sizes, 'warning when nothing in stock');
+  const pj = toProduct({id: 'a', name: ' Худи ', price: '1 500', images: ['img/a.webp', 'http://evil/x.png'], sizes: ['M', 'S'], out: ['S', 'XL'],
+    colors: [{name: 'Белый', hex: '#fff'}, {name: ' ', hex: '#000000'}], hidden: 1});
+  t(pj.name === 'Худи' && pj.price === 1500 && pj.images.length === 1 && pj.sizes.join() === 'S,M' && pj.out.join() === 'S' &&
+    pj.colors.length === 1 && pj.colors[0].hex === '#A9AFB8' && pj.hidden === false, 'toProduct ' + JSON.stringify(pj));
+  // publish(): mocked fetch, must go ref -> commit -> blobs -> tree -> commit -> PATCH ref, nothing else
+  const calls = [], realFetch = window.fetch;
+  window.fetch = async (url, o) => {
+    const method = (o && o.method) || 'GET', body = o && o.body ? JSON.parse(o.body) : null;
+    calls.push({method, url: url.replace('https://api.github.com', ''), body, auth: o.headers.Authorization});
+    const pick = x => ({ok: true, status: 200, json: async () => x});
+    if (url.endsWith('/git/ref/heads/main')) return pick({object: {sha: 'HEAD1'}});
+    if (url.endsWith('/git/commits/HEAD1')) return pick({tree: {sha: 'TREE0'}});
+    if (url.endsWith('/git/blobs')) return pick({sha: 'B' + calls.length});
+    if (url.endsWith('/git/trees')) return pick({sha: 'TREE1'});
+    if (url.endsWith('/git/commits')) return pick({sha: 'COMMIT1'});
+    if (url.endsWith('/git/refs/heads/main')) return pick({});
+    return {ok: false, status: 404, json: async () => ({})};
+  };
+  try {
+    const start = [toProduct({id: 'zip', name: 'Худи', price: 100, images: ['img/hoodie-zip.webp', 'data:image/webp;base64,QUJD'], sizes: ['M'],
+      colors: [{name: 'Белый', hex: '#EDEBE6', img: 'data:image/jpeg;base64,REVG'}]})];
+    const out = await publish(start, 'TOKEN');
+    const seq = calls.map(c => c.method + ' ' + c.url.replace(REPO_API, '').replace(/\/[A-Z0-9]+$/, ''));
+    t(seq.join('|') === ['GET /git/ref/heads/main', 'GET /git/commits', 'POST /git/blobs', 'POST /git/blobs', 'POST /git/blobs', 'POST /git/trees',
+      'POST /git/commits', 'PATCH /git/refs/heads/main'].join('|'), 'publish call order: ' + seq.join('|'));
+    const tree = calls.find(c => c.url.endsWith('/trees')).body;
+    const paths = tree.tree.map(x => x.path);
+    t(tree.base_tree === 'TREE0' && paths.length === 3 && paths[2] === 'toowear/products.json' &&
+      /^toowear\/img\/u-zip-[a-z0-9]+\.webp$/.test(paths[0]) && /^toowear\/img\/u-zip-[a-z0-9]+\.jpg$/.test(paths[1]), 'tree paths ' + paths);
+    const blobs = calls.filter(c => c.url.endsWith('/blobs')).map(c => c.body);
+    t(blobs[0].encoding === 'base64' && blobs[0].content === 'QUJD' && blobs[2].encoding === 'utf-8' && !blobs[2].content.includes('data:'), 'blob contents');
+    t(JSON.parse(blobs[2].content).products[0].images[1] === paths[0].replace('toowear/', ''), 'products.json points to the new photo');
+    t(out[0].images[1] === paths[0].replace('toowear/', ''), 'returned products use paths');
+    const cm = calls.find(c => c.url.endsWith('/git/commits') && c.method === 'POST').body;
+    t(cm.parents[0] === 'HEAD1' && cm.tree === 'TREE1' && cm.message === 'Обновление товаров', 'commit body');
+    t(calls[calls.length - 1].body.force === false && calls[calls.length - 1].body.sha === 'COMMIT1', 'ref update is not forced');
+    t(calls.every(c => c.url.startsWith(REPO_API)), 'only the repo API is called');
+  } catch (e) { t(false, 'publish threw ' + e.message); }
+  window.fetch = realFetch;
+  if (!bad) console.log('selftest ok');
+}
+
+/* ---------- state ---------- */
+const $ = s => document.querySelector(s);
+const ls = {
+  get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set: (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
+  del: k => { try { localStorage.removeItem(k); } catch (e) {} }
+};
+let mode = ls.get(K_TOKEN) ? 'real' : 'demo';
+let products = [], ready = false, dirty = false, view = 'list', editIx = -1, draft = null, ghNote = '', ghOk = false, busy = false;
+const key = () => mode === 'real' ? K_DRAFT : K_DEMO;
+
+function say(text, kind) {
+  const m = $('#msg');
+  m.hidden = !text; m.textContent = text || ''; m.className = kind || '';
+}
+function persist() {
+  dirty = true;
+  if (!ls.set(key(), JSON.stringify({products}))) say('В браузере не хватает места. Удалите часть фото или опубликуйте изменения.', 'bad');
+}
+async function loadProducts() {
+  ready = false; products = []; dirty = false;
+  const saved = ls.get(key());
+  let list = null;
+  if (saved) try { const d = JSON.parse(saved); if (Array.isArray(d.products)) { list = d.products; dirty = true; } } catch (e) {}
+  if (!list) {
+    if (mode === 'demo') {
+      const r = await fetch('../products.json?v=' + Date.now());
+      if (!r.ok) throw new Error('load');
+      list = (await r.json()).products;
+    } else {
+      // contents API (not the CDN), so the draft starts from what is really in the repo
+      const txt = await gh(ls.get(K_TOKEN), `${REPO_API}/contents/${DIR}/products.json?ref=${BRANCH}`, {accept: 'application/vnd.github.raw+json', raw: true});
+      list = JSON.parse(txt).products;
+    }
+  }
+  products = list.map(toProduct); ready = true;
+}
+async function enterMode(m) {
+  mode = m; view = 'list'; ghNote = ''; ghOk = false; ready = false; products = []; say('Загрузка…'); render();
+  try {
+    if (mode === 'real') {
+      const tok = ls.get(K_TOKEN);
+      if (!tok) { say(''); return render(); }
+      try {
+        const r = await gh(tok, REPO_API);
+        ghOk = true; ghNote = 'Ключ работает. Репозиторий: ' + r.full_name + '.' +
+          (r.permissions && r.permissions.push === false ? ' ВНИМАНИЕ: у ключа нет права записи.' : '');
+      } catch (e) { ghNote = ghError(e); if (e.status === 401) ls.del(K_TOKEN); }
+    }
+    await loadProducts(); say('');
+  } catch (e) { say(e.status !== undefined ? ghError(e) : 'Не удалось загрузить список товаров. Обновите страницу.', 'bad'); }
+  render();
+}
+
+/* ---------- photos ---------- */
+async function photoFromFile(file) {
+  if (!file.type.startsWith('image/')) throw new Error('«' + file.name + '» не картинка.');
+  if (file.size > MAX_FILE) throw new Error('«' + file.name + '» больше 15 МБ.');
+  const url = URL.createObjectURL(file);
+  try {
+    const im = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error('Не удалось открыть «' + file.name + '».')); i.src = url; });
+    const k = Math.min(1, MAX_SIDE / Math.max(im.naturalWidth, im.naturalHeight));
+    const c = document.createElement('canvas');
+    c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    let u = c.toDataURL('image/webp', 0.8);
+    if (!u.startsWith('data:image/webp')) u = c.toDataURL('image/jpeg', 0.8); // Safari cannot save webp
+    return u;
+  } finally { URL.revokeObjectURL(url); }
+}
+async function addPhotos(files, apply) {
+  say('Обрабатываю фото…'); const errs = [];
+  for (const f of files) { try { apply(await photoFromFile(f)); } catch (e) { errs.push(e.message); } }
+  say(errs.join(' '), errs.length ? 'bad' : ''); render();
+}
+
+/* ---------- views ---------- */
+function topHtml() {
+  const tok = ls.get(K_TOKEN);
+  let h = `<div class="modes"><button data-a="mode" data-m="demo" aria-pressed="${mode === 'demo'}">ДЕМО</button>` +
+    `<button data-a="mode" data-m="real" aria-pressed="${mode === 'real'}">СОХРАНЕНИЕ НА САЙТ</button></div>`;
+  if (mode === 'demo') {
+    h += `<div class="banner"><p><b>ДЕМО.</b> Изменения видны только в этом браузере, на сайт они не попадают.</p>` +
+      `<div class="row"><a class="btn" href="../" target="_blank" rel="noopener">Посмотреть на сайте</a><button data-a="resetdemo">Сбросить демо</button></div></div>`;
+  } else {
+    h += `<div class="banner real"><p><b>СОХРАНЕНИЕ НА САЙТ.</b> ` + (tok ? 'Правки лежат в черновике, пока вы не нажмёте «Опубликовать».' : 'Чтобы сохранять на сайт, вставьте ключ GitHub.') + `</p>`;
+    if (tok) h += `<p class="muted">${esc(ghNote)}</p><div class="row"><button class="pri" data-a="publish" ${ready && dirty && !busy ? '' : 'disabled'}>Опубликовать</button>` +
+      `<button data-a="reload">Загрузить с сайта заново</button></div>`;
+    h += `<details ${tok ? '' : 'open'}><summary>Ключ GitHub</summary>` +
+      `<ol class="muted"><li>Откройте github.com/settings/personal-access-tokens и нажмите «Generate new token».</li>` +
+      `<li>Repository access: Only select repositories, выберите только <b>${esc(REPO)}</b>.</li>` +
+      `<li>Permissions, Repository permissions: <b>Contents: Read and write</b>.</li><li>Скопируйте ключ и вставьте ниже.</li></ol>` +
+      `<p class="muted">Ключ хранится только в этом браузере, на этом устройстве, и отправляется только на api.github.com.</p>` +
+      `<label class="f">Ключ<input type="password" id="tok" autocomplete="off" placeholder="github_pat_…"></label>` +
+      `<div class="row"><button class="pri" data-a="savetoken">Сохранить и проверить</button>${tok ? '<button class="danger" data-a="disconnect">Отключить</button>' : ''}</div></details></div>`;
+  }
+  return h;
+}
+function listHtml() {
+  if (mode === 'real' && !ls.get(K_TOKEN)) return '';
+  if (!ready) return '<p class="muted">Товары не загружены.</p>';
+  return `<div class="sec"><button class="pri" data-a="add" style="width:100%">Добавить товар</button></div><ul>` + products.map((p, i) =>
+    `<li class="item ${p.hidden ? 'hid' : ''}"><img src="${esc(thumb(p.images[0] || ''))}" alt="">` +
+    `<div><b>${esc(p.name)}</b>${p.hidden ? '<span class="badge">Скрыт</span>' : ''}<div>${esc(p.price)} с</div>` +
+    `<div class="muted">В наличии: ${esc(inStock(p).join(', ') || 'нет')}</div></div><div class="btns">` +
+    `<button data-a="edit" data-i="${i}">Изменить</button><button data-a="hide" data-i="${i}">${p.hidden ? 'Показать' : 'Скрыть'}</button>` +
+    `<button data-a="up" data-i="${i}" aria-label="Выше" ${i ? '' : 'disabled'}>↑</button><button data-a="down" data-i="${i}" aria-label="Ниже" ${i < products.length - 1 ? '' : 'disabled'}>↓</button>` +
+    `<button class="danger" data-a="del" data-i="${i}">Удалить</button></div></li>`).join('') + '</ul>' +
+    (products.length ? '' : '<p class="muted">Товаров пока нет.</p>');
+}
+function editHtml() {
+  const d = draft, chips = [...new Set([...ORDER, ...d.sizes])];
+  return `<h2>${editIx < 0 ? 'Новый товар' : 'Изменить товар'}</h2>` +
+    `<label class="f">Название<input data-f="name" value="${esc(d.name)}" maxlength="120"><div class="err" id="e-name"></div></label>` +
+    `<label class="f">Цена, сом<input data-f="price" inputmode="numeric" value="${esc(d.price)}" maxlength="7"><div class="err" id="e-price"></div></label>` +
+    `<label class="f">Описание<textarea data-f="description" rows="4" maxlength="2000">${esc(d.description)}</textarea></label>` +
+    `<div class="sec"><b>Фото (первое главное)</b><div class="photos">` + d.images.map((s, i) =>
+      `<div class="ph"><img src="${esc(thumb(s))}" alt=""><small>${i ? i + 1 : 'Главное'}</small><div class="row">` +
+      `<button data-a="pl" data-i="${i}" aria-label="Левее" ${i ? '' : 'disabled'}>←</button><button data-a="pr" data-i="${i}" aria-label="Правее" ${i < d.images.length - 1 ? '' : 'disabled'}>→</button>` +
+      `<button class="danger" data-a="px" data-i="${i}" aria-label="Убрать фото">✕</button></div></div>`).join('') + `</div>` +
+    `<label class="btn">Добавить фото<input type="file" accept="image/*" multiple hidden data-photos></label><div class="err" id="e-photos"></div></div>` +
+    `<div class="sec"><b>Размеры</b><div class="chips">` + chips.map(s =>
+      `<button data-a="sz" data-s="${esc(s)}" aria-pressed="${d.sizes.includes(s)}">${esc(s)}</button>`).join('') + `</div>` +
+    `<div class="row"><input id="custom" placeholder="свой размер" maxlength="12" style="flex:1;width:auto"><button data-a="addsize">Добавить</button></div><div class="err" id="e-sizes"></div>` +
+    (d.sizes.length ? `<p class="muted">Нажмите на размер, которого нет в наличии:</p><div class="chips stock">` + sortSizes(d.sizes).map(s =>
+      `<button data-a="out" data-s="${esc(s)}" aria-pressed="${d.out.includes(s)}">${esc(s)}${d.out.includes(s) ? ' нет' : ''}</button>`).join('') + `</div>` : '') + `</div>` +
+    `<div class="sec"><b>Цвета</b>` + d.colors.map((c, i) =>
+      `<div class="crow"><input type="color" data-f="chex" data-i="${i}" value="${esc(c.hex)}" aria-label="Цвет">` +
+      `<input data-f="cname" data-i="${i}" value="${esc(c.name)}" placeholder="Название, например Белый" maxlength="40">` +
+      (c.img ? `<img src="${esc(thumb(c.img))}" alt=""><button data-a="cpx" data-i="${i}">Убрать фото</button>`
+        : `<label class="btn">Фото цвета<input type="file" accept="image/*" hidden data-cphoto="${i}"></label>`) +
+      `<button class="danger" data-a="cx" data-i="${i}" aria-label="Удалить цвет">✕</button></div>`).join('') +
+    `<button data-a="addcolor">Добавить цвет</button></div>` +
+    `<label class="f row"><input type="checkbox" data-f="hidden" ${d.hidden ? 'checked' : ''} style="width:24px;height:24px"> Скрыть товар с сайта</label>` +
+    `<div class="sticky"><button class="pri" data-a="save">Сохранить</button><button data-a="cancel">Отмена</button></div>`;
+}
+function render() {
+  $('#app').innerHTML = view === 'edit' ? editHtml() : topHtml() + listHtml();
+}
+function showErrors(v) {
+  ['name', 'price', 'photos', 'sizes'].forEach(k => {
+    const e = $('#e-' + k); if (!e) return;
+    e.textContent = v.errors[k] || v.warnings[k] || ''; e.className = 'err' + (v.errors[k] ? '' : ' warn');
+  });
+  const first = document.querySelector('.err:not(:empty)'); if (first) first.scrollIntoView({block: 'center'});
+}
+function startEdit(i) {
+  editIx = i;
+  draft = i < 0 ? {id: newId(), name: '', price: '', description: '', images: [], sizes: [], out: [], colors: [], hidden: false}
+    : Object.assign(JSON.parse(JSON.stringify(products[i])), {price: String(products[i].price)});
+  view = 'edit'; say(''); render(); scrollTo(0, 0);
+}
+function savedMsg() {
+  say(mode === 'demo' ? 'Сохранено в демо. Нажмите «Посмотреть на сайте», чтобы увидеть.' : 'Сохранено в черновик. Чтобы это попало на сайт, нажмите «Опубликовать».', 'ok');
+}
+async function doPublish() {
+  busy = true; say('Публикую… Не закрывайте страницу.'); render();
+  try {
+    products = await publish(products, ls.get(K_TOKEN));
+    ls.del(K_DRAFT); dirty = false; say('Готово. Сайт обновится через 1–2 минуты.', 'ok');
+  } catch (e) { say(ghError(e), 'bad'); }
+  busy = false; render();
+}
+async function saveToken() {
+  const v = ($('#tok').value || '').trim();
+  if (!v) return say('Вставьте ключ в поле.', 'bad');
+  if (!ls.set(K_TOKEN, v)) return say('Браузер не дал сохранить ключ (приватный режим?).', 'bad');
+  await enterMode('real');
+  if (!ls.get(K_TOKEN)) say(ghNote, 'bad'); else if (ghOk) say('Ключ сохранён на этом устройстве.', 'ok');
+}
+
+/* ---------- events ---------- */
+const swap = (a, i, j) => { [a[i], a[j]] = [a[j], a[i]]; };
+document.addEventListener('click', async ev => {
+  const b = ev.target.closest('[data-a]'); if (!b) return;
+  const a = b.dataset.a, i = +b.dataset.i, s = b.dataset.s;
+  if (view === 'edit') {
+    const d = draft;
+    if (a === 'cancel') { view = 'list'; say(''); return render(); }
+    if (a === 'save') {
+      const v = validate(d); showErrors(v);
+      if (Object.keys(v.errors).length) return;
+      const p = toProduct(d);
+      if (editIx < 0) products.push(p); else products[editIx] = p;
+      persist(); view = 'list'; savedMsg(); return render();
+    }
+    if (a === 'pl') swap(d.images, i, i - 1);
+    else if (a === 'pr') swap(d.images, i, i + 1);
+    else if (a === 'px') d.images.splice(i, 1);
+    else if (a === 'sz') { d.sizes = d.sizes.includes(s) ? d.sizes.filter(x => x !== s) : sortSizes([...d.sizes, s]); d.out = d.out.filter(x => d.sizes.includes(x)); }
+    else if (a === 'out') d.out = d.out.includes(s) ? d.out.filter(x => x !== s) : [...d.out, s];
+    else if (a === 'addsize') { const n = normSize($('#custom').value); if (n) d.sizes = sortSizes([...d.sizes, n]); }
+    else if (a === 'addcolor') d.colors.push({name: '', hex: '#EDEBE6', img: ''});
+    else if (a === 'cx') d.colors.splice(i, 1);
+    else if (a === 'cpx') d.colors[i].img = '';
+    else return;
+    return render();
+  }
+  if (a === 'mode') { if (b.dataset.m !== mode) enterMode(b.dataset.m); return; }
+  if (a === 'resetdemo') { ls.del(K_DEMO); return enterMode('demo').then(() => say('Демо сброшено: снова показаны товары с сайта.', 'ok')); }
+  if (a === 'reload') { if (!dirty || confirm('Черновик будет удалён, список загрузится с сайта. Продолжить?')) { ls.del(K_DRAFT); enterMode('real'); } return; }
+  if (a === 'disconnect') { if (dirty && !confirm('Неопубликованные правки будут удалены. Отключить ключ?')) return; ls.del(K_TOKEN); ls.del(K_DRAFT); return enterMode('demo').then(() => say('Ключ удалён с этого устройства.', 'ok')); }
+  if (a === 'savetoken') return saveToken();
+  if (a === 'publish') return doPublish();
+  if (!ready) return;
+  if (a === 'add') return startEdit(-1);
+  if (a === 'edit') return startEdit(i);
+  if (a === 'hide') products[i].hidden = !products[i].hidden;
+  else if (a === 'up') swap(products, i, i - 1);
+  else if (a === 'down') swap(products, i, i + 1);
+  else if (a === 'del') { if (!confirm('Удалить «' + products[i].name + '»? Это нельзя отменить.')) return; products.splice(i, 1); }
+  else return;
+  persist(); savedMsg(); render();
+});
+document.addEventListener('input', ev => {
+  const t = ev.target, f = t.dataset.f; if (!f || !draft) return;
+  const i = +t.dataset.i;
+  if (f === 'price') { t.value = t.value.replace(/\D/g, ''); draft.price = t.value; }
+  else if (f === 'chex') draft.colors[i].hex = t.value;
+  else if (f === 'cname') draft.colors[i].name = t.value;
+  else if (f === 'hidden') draft.hidden = t.checked;
+  else draft[f] = t.value;
+  const e = $('#e-' + f); if (e) e.textContent = '';
+});
+document.addEventListener('keydown', ev => { if (ev.key === 'Enter' && ev.target.id === 'custom') { ev.preventDefault(); document.querySelector('[data-a=addsize]').click(); } });
+document.addEventListener('change', ev => {
+  const t = ev.target, files = [...(t.files || [])];
+  if (t.matches('[data-photos]') && draft) addPhotos(files, u => draft.images.push(u));
+  else if (t.matches('[data-cphoto]') && draft) addPhotos(files.slice(0, 1), u => { draft.colors[+t.dataset.cphoto].img = u; });
+});
+
+(async () => {
+  if (location.search.includes('selftest')) await selftest();
+  enterMode(mode);
+})();
+</script>
+</body>
+</html>

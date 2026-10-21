@@ -92,6 +92,11 @@ footer .demo a{font-weight:700}
 .pill[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--white)}
 .pill:disabled{background:var(--haze);border-color:var(--haze);color:var(--muted);font-weight:400;text-decoration:line-through;cursor:not-allowed}
 .note{margin:18px 0 0;font-size:14px;color:var(--muted)}
+.desc{margin:12px 0 0;white-space:pre-line}
+.err{grid-column:1/-1;margin:24px 0;color:var(--ink)}
+.demobar[hidden]{display:none}
+.demobar{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px 12px;background:#FFF3C4;color:var(--ink);font-size:14px;text-align:center}
+.demobar button{min-height:44px;padding:0 14px;border:1.5px solid var(--ink);border-radius:10px;background:var(--white);font-weight:700}
 .s-cta{flex:none;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--white)}
 .main{display:block;width:100%;height:52px;border:0;border-radius:14px;background:var(--tg);color:var(--ink);font-weight:700;font-size:16px}
 .main:active:not(:disabled){transform:scale(.985)}
@@ -104,6 +109,7 @@ footer .demo a{font-weight:700}
 </style>
 </head>
 <body>
+<div class="demobar" id="demobar" hidden><span>Вы смотрите демо-изменения из админки.</span><button type="button" id="demoreset">Сбросить</button></div>
 <div class="app" id="app">
   <header class="bar">
     <span class="logo">TOO WEAR</span>
@@ -140,7 +146,8 @@ footer .demo a{font-weight:700}
   </div>
   <div class="s-body">
     <div class="s-head"><h2 id="s-name"></h2><p id="s-price"></p></div>
-    <div class="row"><span class="lbl"><span data-i18n="color"></span>: <b id="s-cname"></b></span><div class="opts" id="s-colors"></div></div>
+    <p class="desc" id="s-desc"></p>
+    <div class="row" id="s-crow"><span class="lbl"><span data-i18n="color"></span>: <b id="s-cname"></b></span><div class="opts" id="s-colors"></div></div>
     <div class="row"><span class="lbl" data-i18n="size"></span><div class="opts" id="s-sizes"></div></div>
     <p class="note" data-i18n="note"></p>
   </div>
@@ -150,25 +157,9 @@ footer .demo a{font-weight:700}
 <script>
 const PHONE = '996551080110', TG = 'lat3sfx';
 
-/* Products: replace this list with the client's real ones. colors: k = key in I18N, f = CSS filter that
-   tints the same photo, img = a separate photo for that colour (if the shop has one). */
-// shortcut: only grey is shown by darkening the photo; other colours keep the photo (a tinted fake looked wrong). Add img per colour when the shop has photos.
-const TINT = {grey:'brightness(.72)'};
-const PRODUCTS = [
-  {id:'zip',   name:'Худи на молнии',    price:3900, img:'img/hoodie-zip.webp',   sizes:['S','M','L','XL'], out:['XL'],
-   colors:[{k:'white'},{k:'grey',f:TINT.grey},{k:'blue'}]},
-  {id:'print', name:'Худи с принтом',    price:3600, img:'img/hoodie-print.webp', sizes:['S','M','L','XL'], out:['S'],
-   colors:[{k:'grey'},{k:'blue'}]},
-  {id:'long',  name:'Лонгслив оверсайз', price:2200, img:'img/longsleeve.webp',   sizes:['M','L','XL'], out:[],
-   colors:[{k:'white'},{k:'grey',f:TINT.grey}]},
-  {id:'tee',   name:'Футболка базовая',  price:1400, img:'img/tee.webp',          sizes:['S','M','L','XL'], out:['S'],
-   colors:[{k:'black'},{k:'grey'}]},
-  {id:'stripe',name:'Свитшот в полоску', price:2900, img:'img/stripe.webp',       sizes:['S','M','L','XL'], out:['S','XL'],
-   colors:[{k:'grey'}]},
-  {id:'cap',   name:'Кепка с вышивкой',  price:1200, img:'img/cap.webp',          sizes:['S/M','L/XL'], out:[],
-   colors:[{k:'black'},{k:'blue'}]}
-];
-const SWATCH = {white:'#EDEBE6', grey:'#A9AFB8', black:'#141A22', blue:'#35598F'};
+/* Products come from products.json (edited in /admin/). Everything shop-entered goes through esc() / okImg(). */
+let PRODUCTS = [];
+const KGCOL = {'Белый':'Ак','Серый':'Боз','Чёрный':'Кара','Синий':'Көк'}; // known colours only; others show as typed
 
 const MSG = {hello:'Здравствуйте! Хочу заказать:', total:'Итого'}; // order messages are always Russian
 const I18N = {
@@ -176,14 +167,12 @@ const I18N = {
       color:'Цвет', size:'Размер', pickSize:'Выберите размер', order:'Оформить в Telegram', close:'Закрыть',
       out:'нет в наличии', note:'В наличии в Бишкеке. Можно примерить в магазине.',
       addr:'Адрес', addrV:'проспект Чуй, 154', hours:'Часы работы', hoursV:'Каждый день, 10:00–20:00',
-      credits:'Фото и лицензии', demo:'Демо-сайт. Хотите такой же для своего магазина?', demoLink:'Написать Азрету',
-      white:'Белый', grey:'Серый', black:'Чёрный', blue:'Синий'},
+      credits:'Фото и лицензии', demo:'Демо-сайт. Хотите такой же для своего магазина?', demoLink:'Написать Азрету'},
   kg:{h1:'Күнүмдүк кийим', lead:'Буюм, өлчөм, түс тандаңыз. Буйрутма Telegram аркылуу барат.',
       color:'Түс', size:'Өлчөм', pickSize:'Өлчөмдү тандаңыз', order:'Telegram аркылуу буйрутма', close:'Жабуу',
       out:'жок', note:'Бишкекте бар. Дүкөндө өлчөп көрсөңүз болот.',
       addr:'Дарек', addrV:'Чүй проспектиси, 154', hours:'Иш убактысы', hoursV:'Күн сайын, 10:00–20:00',
-      credits:'Сүрөттөр', demo:'Демо-сайт. Дүкөнүңүзгө ушундай сайт керекпи?', demoLink:'Азретке жазуу',
-      white:'Ак', grey:'Боз', black:'Кара', blue:'Көк'}
+      credits:'Сүрөттөр', demo:'Демо-сайт. Дүкөнүңүзгө ушундай сайт керекпи?', demoLink:'Азретке жазуу'}
 };
 
 /* ---------- pure helpers (checked by ?selftest) ---------- */
@@ -201,7 +190,25 @@ const sheetSnap = (v, y, h) => y + (v / 1000) * 0.998 / (1 - 0.998) > h / 2 ? 'c
 /* pulling past the open position resists more and more instead of stopping dead */
 const rubber = (over, dim) => (over * dim * 0.55) / (dim + 0.55 * Math.abs(over));
 
-if (location.search.includes('selftest')) {
+const esc = v => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* image paths: only img/... relative files; data: images only for the admin demo overlay */
+const okImg = (s, data) => typeof s === 'string' &&
+  ((/^img\/\w[\w.\-\/]*$/.test(s) && !s.includes('..')) || (!!data && /^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(s)));
+const str = (v, n) => typeof v === 'string' ? v.slice(0, n) : '';
+const arr = v => Array.isArray(v) ? v : [];
+function cleanProducts(list, demo) {
+  return arr(list).map(p => {
+    if (!p || typeof p !== 'object') return null;
+    const o = {id: str(p.id, 40), name: str(p.name, 120), price: Math.round(Number(p.price)), description: str(p.description, 2000),
+      images: arr(p.images).filter(s => okImg(s, demo)),
+      sizes: arr(p.sizes).map(s => str(s, 12)).filter(Boolean), out: arr(p.out).map(s => str(s, 12)),
+      colors: arr(p.colors).map(c => ({name: str(c && c.name, 40), hex: /^#[0-9a-f]{6}$/i.test(c && c.hex) ? c.hex : '#A9AFB8',
+        img: okImg(c && c.img, demo) ? c.img : ''})).filter(c => c.name)};
+    return o.id && o.name && Number.isFinite(o.price) && o.images.length && p.hidden !== true ? o : null;
+  }).filter(Boolean);
+}
+
+function selftest() {
   let bad = 0;
   const t = (ok, msg) => { if (!ok) { bad++; console.error('FAIL: ' + msg); } };
   t(fmt(4900) === '4' + NB + '900' + NB + 'с', 'fmt');
@@ -216,8 +223,19 @@ if (location.search.includes('selftest')) {
   t(sheetSnap(0, 80, 600) === 'open', 'short drag springs back open');
   t(sheetSnap(-1500, 500, 600) === 'open', 'flick up opens');
   t(rubber(100, 600) < 100 && rubber(100, 600) > 0, 'rubber band resists');
-  t(PRODUCTS.every(p => p.sizes.some(s => !p.out.includes(s))), 'every product has a size in stock');
+  t(PRODUCTS.length > 0 && PRODUCTS.every(p => p.images.length && Array.isArray(p.sizes)), 'products loaded with a photo each');
   t(Object.keys(I18N.ru).every(k => k in I18N.kg), 'every ru string has a kg twin');
+  const evil = `<img src=x onerror=alert(1)>"'&`;
+  t(!/[<>"']/.test(esc(evil)) && esc(evil).startsWith('&lt;img'), 'esc makes markup inert');
+  const box = document.createElement('div'); box.innerHTML = `<b title="${esc(evil)}">${esc(evil)}</b>`;
+  t(box.children.length === 1 && !box.querySelector('img') && box.firstChild.textContent === evil, 'escaped text stays text');
+  t(okImg('img/tee.webp') && okImg('img/u-zip-ab12.webp'), 'okImg accepts img/ files');
+  t(!okImg('https://evil.example/x.png') && !okImg('//evil/x.png') && !okImg('/img/x.webp') && !okImg('img/../x.png') &&
+    !okImg('javascript:alert(1)') && !okImg('img/x.webp" onerror="x') && !okImg('data:image/webp;base64,AAAA'), 'okImg rejects the rest');
+  t(okImg('data:image/webp;base64,AAAA', true) && !okImg('data:text/html;base64,AAAA', true), 'okImg data only in demo, images only');
+  const cp = cleanProducts([{id:'a', name:'<b>x</b>', price:'100', images:['http://x/y.png','img/a.webp'], sizes:['M'], out:[], colors:[{name:'Красный', hex:'red'}]},
+    {id:'b', name:'hid', price:1, images:['img/a.webp'], hidden:true}, {id:'c', name:'noimg', price:1, images:[]}], false);
+  t(cp.length === 1 && cp[0].images.length === 1 && cp[0].colors[0].hex === '#A9AFB8' && cp[0].name === '<b>x</b>', 'cleanProducts filters hidden, bad images, bad hex');
   if (!bad) console.log('selftest ok');
 }
 
@@ -237,9 +255,12 @@ function setLang(l) {
 document.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => setLang(b.dataset.lang));
 
 /* ---------- grid ---------- */
-$('#grid').innerHTML = PRODUCTS.map((p, i) =>
-  `<button type="button" class="tile" data-id="${p.id}"><span class="ph"><img src="${p.img}" width="960" height="1200" alt="${p.name}" ${i > 1 ? 'loading="lazy"' : ''}></span>` +
-  `<b>${p.name}</b><span class="pr">${fmt(p.price)}</span></button>`).join('');
+function renderGrid() {
+  $('#grid').innerHTML = PRODUCTS.map((p, i) =>
+    `<button type="button" class="tile" data-id="${esc(p.id)}"><span class="ph"><img src="${esc(p.images[0])}" width="960" height="1200" alt="${esc(p.name)}" ${i > 1 ? 'loading="lazy"' : ''}></span>` +
+    `<b>${esc(p.name)}</b><span class="pr">${fmt(p.price)}</span></button>`).join('') ||
+    '<p class="err">Товаров пока нет.</p>';
+}
 $('#addr').href = 'https://2gis.kg/bishkek/search/' + encodeURIComponent(I18N.ru.addrV);
 $('#demo').href = tgLink('Здравствуйте! Хочу такой же сайт для своего магазина.');
 
@@ -248,22 +269,25 @@ const sheet = $('#sheet'), scrim = $('#scrim'), grab = $('#grab'), app = $('#app
 let cur = null, colorIx = 0, size = null, opener = null;
 
 function paintSheet() {
-  const p = cur, c = p.colors[colorIx], L = I18N[lang];
+  const p = cur, c = p.colors[colorIx] || {name:'', hex:'', img:''}, L = I18N[lang];
+  const cname = x => lang === 'kg' ? KGCOL[x.name] || x.name : x.name;
   const img = $('#s-img');
-  img.src = c.img || p.img; img.alt = p.name; img.style.filter = c.f || '';
+  img.src = c.img || p.images[0]; img.alt = p.name;
   $('#s-name').textContent = p.name;
   $('#s-price').textContent = fmt(p.price);
-  $('#s-cname').textContent = L[c.k];
+  $('#s-desc').textContent = p.description; $('#s-desc').hidden = !p.description;
+  $('#s-crow').hidden = !p.colors.length;
+  $('#s-cname').textContent = cname(c);
   $('#s-colors').innerHTML = p.colors.map((x, i) =>
-    `<button type="button" class="sw" data-i="${i}" aria-pressed="${i === colorIx}" aria-label="${L[x.k]}"><i style="--c:${SWATCH[x.k]}"></i></button>`).join('');
+    `<button type="button" class="sw" data-i="${i}" aria-pressed="${i === colorIx}" aria-label="${esc(cname(x))}"><i style="--c:${esc(x.hex)}"></i></button>`).join('');
   $('#s-sizes').innerHTML = p.sizes.map(s => {
     const gone = p.out.includes(s);
-    return `<button type="button" class="pill" data-s="${s}" aria-pressed="${s === size}" ${gone ? `disabled aria-label="${s}, ${L.out}"` : ''}>${s}</button>`;
+    return `<button type="button" class="pill" data-s="${esc(s)}" aria-pressed="${s === size}" ${gone ? `disabled aria-label="${esc(s)}, ${L.out}"` : ''}>${esc(s)}</button>`;
   }).join('');
   const ok = size !== null, btn = $('#s-order');
   btn.disabled = !ok;
   btn.textContent = ok ? L.order : L.pickSize;
-  btn.dataset.href = ok ? tgLink(orderMessage([{name:p.name, size, color:I18N.ru[c.k], price:p.price}])) : '';
+  btn.dataset.href = ok ? tgLink(orderMessage([{name:p.name, size, color:c.name, price:p.price}])) : '';
 }
 $('#s-colors').onclick = e => { const b = e.target.closest('.sw'); if (b) { colorIx = +b.dataset.i; paintSheet(); } };
 $('#s-sizes').onclick = e => { const b = e.target.closest('.pill'); if (b && !b.disabled) { size = b.dataset.s; paintSheet(); } };
@@ -351,6 +375,33 @@ window.addEventListener('resize', () => { if (sheet.style.visibility !== 'visibl
 let saved = null;
 try { saved = localStorage.getItem('lang'); } catch (e) {}
 setLang(saved === 'kg' ? 'kg' : 'ru');
+
+/* ---------- load products (admin demo overlay in localStorage wins, except in ?selftest) ---------- */
+const TEST = location.search.includes('selftest');
+async function load() {
+  let data = null, demo = false;
+  if (!TEST) try {
+    const d = JSON.parse(localStorage.getItem('toowear-demo') || 'null');
+    if (d && Array.isArray(d.products)) { data = d; demo = true; }
+  } catch (e) {}
+  if (!data) {
+    try {
+      const r = await fetch('products.json?v=' + Date.now());
+      if (!r.ok) throw new Error(r.status);
+      data = await r.json();
+    } catch (e) {
+      $('#grid').innerHTML = '<p class="err">Не удалось загрузить товары. Обновите страницу или попробуйте позже.</p>';
+      if (TEST) console.error('FAIL: products.json did not load');
+      return;
+    }
+  }
+  PRODUCTS = cleanProducts(data.products, demo);
+  renderGrid();
+  if (demo) $('#demobar').hidden = false;
+  if (TEST) selftest();
+}
+$('#demoreset').onclick = () => { try { localStorage.removeItem('toowear-demo'); } catch (e) {} location.reload(); };
+load();
 </script>
 </body>
 </html>
