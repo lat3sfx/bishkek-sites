@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://toowear-admin.lat3sfx.workers.dev; base-uri 'none'; form-action 'none'">
 <link rel="icon" href="data:,">
 <title>TOO WEAR: товары</title>
 <style>
@@ -74,8 +74,9 @@ ol{margin:6px 0;padding-left:20px}
 </main>
 <script>
 /* ---------- config ---------- */
-const OWNER = 'lat3sfx', REPO = 'bishkek-sites', BRANCH = 'main', DIR = 'toowear';
-const K_TOKEN = 'toowear-gh-token', K_DEMO = 'toowear-demo', K_DRAFT = 'toowear-gh-draft';
+// Worker address; filled in after deploy. The same origin must be in the CSP connect-src above (?selftest checks this).
+const API = 'https://toowear-admin.lat3sfx.workers.dev';
+const K_SESSION = 'toowear-session', K_DEMO = 'toowear-demo', K_DRAFT = 'toowear-draft';
 const MAX_SIDE = 1200, MAX_FILE = 15 * 1024 * 1024;
 
 /* ---------- pure logic (checked by ?selftest) ---------- */
@@ -90,7 +91,7 @@ const sortSizes = list => {
 const parsePrice = v => { const d = String(v == null ? '' : v).replace(/\D/g, '').slice(0, 7); return d ? +d : 0; };
 const rand = () => Math.random().toString(36).slice(2, 8);
 const newId = () => 'p' + rand();
-const imagePath = (id, r, ext = 'webp') => `img/u-${String(id).replace(/[^a-z0-9-]/gi, '')}-${r}.${ext}`;
+const imagePath = (id, r, ext = 'webp') => `img/u-${String(id).replace(/[^a-z0-9-]/gi, '').toLowerCase()}-${r}.${ext}`;
 const okPath = s => typeof s === 'string' && (/^img\/\w[\w.\-]*$/.test(s) || /^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(s));
 /* editor draft or loaded product -> clean product for products.json */
 function toProduct(p) {
@@ -118,54 +119,50 @@ function validate(p) {
 const inStock = p => p.sizes.filter(s => !p.out.includes(s));
 const thumb = s => /^data:/.test(s) ? s : '../' + s;
 
-/* ---------- GitHub ---------- */
-const REPO_API = `/repos/${OWNER}/${REPO}`;
-async function gh(token, path, o = {}) {
+/* ---------- store API (Cloudflare Worker) ---------- */
+// session token lives in sessionStorage: gone when the tab is closed
+const sess = {
+  get: () => { try { return sessionStorage.getItem(K_SESSION); } catch (e) { return null; } },
+  set: v => { try { sessionStorage.setItem(K_SESSION, v); return true; } catch (e) { return false; } },
+  del: () => { try { sessionStorage.removeItem(K_SESSION); } catch (e) {} }
+};
+async function api(path, o = {}) {
   let r;
   try {
-    r = await fetch('https://api.github.com' + path, {
+    r = await fetch(API + path, {
       method: o.method || 'GET', cache: 'no-store',
-      headers: Object.assign({Authorization: 'Bearer ' + token, Accept: o.accept || 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28'}, o.body ? {'Content-Type': 'application/json'} : {}),
+      headers: Object.assign(o.login ? {} : {Authorization: 'Bearer ' + sess.get()}, o.body ? {'Content-Type': 'application/json'} : {}),
       body: o.body ? JSON.stringify(o.body) : undefined
     });
   } catch (e) { const x = new Error('network'); x.status = 0; throw x; }
-  if (!r.ok) { const x = new Error('http ' + r.status); x.status = r.status; throw x; }
-  return o.raw ? r.text() : r.json();
+  if (!r.ok) {
+    if (r.status === 401 && !o.login) sess.del(); // expired or bad session: back to the login form
+    const x = new Error('http ' + r.status); x.status = r.status; throw x;
+  }
+  return r.json();
 }
-function ghError(e) {
+function apiError(e) {
   return ({
-    0: 'Нет связи с GitHub. Проверьте интернет и попробуйте ещё раз. Изменения сохранены в черновике.',
-    401: 'Ключ не подходит или устарел. Создайте новый ключ и вставьте его заново.',
-    403: 'У ключа нет прав записи (нужно Contents: Read and write) или превышен лимит запросов. Проверьте права ключа.',
-    404: 'Не найден репозиторий ' + REPO + ' или файл. Проверьте, что ключ выдан именно на репозиторий ' + REPO + '.',
+    0: 'Нет связи с сервером. Проверьте интернет и попробуйте ещё раз. Изменения сохранены в черновике.',
+    401: 'Сессия закончилась, войдите снова.',
+    403: 'Доступ закрыт: откройте страницу по обычному адресу магазина.',
     409: 'Сайт изменился, пока вы работали. Нажмите «Загрузить с сайта заново» и повторите (черновик будет сброшен).',
-    422: 'Сайт изменился, пока вы работали. Нажмите «Загрузить с сайта заново» и повторите (черновик будет сброшен).'
+    413: 'Слишком много фото за один раз. Опубликуйте часть изменений, потом остальное.',
+    429: 'Слишком много попыток. Подождите минуту и попробуйте снова.'
   })[e.status] || 'Не получилось (ошибка ' + e.status + '). Черновик сохранён.';
 }
-/* One commit: new photos + products.json. Returns the products with data: photos replaced by their new paths. */
-async function publish(products, token) {
-  const g = REPO_API + '/git', list = JSON.parse(JSON.stringify(products)), files = [];
+/* One request: new photos + products. Returns the products with data: photos replaced by their new paths. */
+async function publish(products) {
+  const list = JSON.parse(JSON.stringify(products)), images = [];
   const conv = (src, id) => {
     const m = /^data:image\/(webp|jpeg|png);base64,(.+)$/.exec(src || '');
     if (!m) return src;
     const path = imagePath(id, rand(), m[1] === 'jpeg' ? 'jpg' : m[1]);
-    files.push({path: `${DIR}/${path}`, content: m[2], encoding: 'base64'});
+    images.push({path, base64: m[2]});
     return path;
   };
   list.forEach(p => { p.images = p.images.map(s => conv(s, p.id)); p.colors.forEach(c => { if (c.img) c.img = conv(c.img, p.id); }); });
-  files.push({path: `${DIR}/products.json`, content: productsJson(list), encoding: 'utf-8'});
-  const head = (await gh(token, `${g}/ref/heads/${BRANCH}`)).object.sha;
-  const base = (await gh(token, `${g}/commits/${head}`)).tree.sha;
-  const tree = [];
-  for (const f of files) {
-    const b = await gh(token, `${g}/blobs`, {method: 'POST', body: {content: f.content, encoding: f.encoding}});
-    tree.push({path: f.path, mode: '100644', type: 'blob', sha: b.sha});
-  }
-  const t = await gh(token, `${g}/trees`, {method: 'POST', body: {base_tree: base, tree}});
-  const c = await gh(token, `${g}/commits`, {method: 'POST', body: {message: 'Обновление товаров', tree: t.sha, parents: [head]}});
-  // force:false -> GitHub refuses (422) if the branch moved since we read it
-  await gh(token, `${g}/refs/heads/${BRANCH}`, {method: 'PATCH', body: {sha: c.sha, force: false}});
+  await api('/publish', {method: 'POST', body: {products: list, images}});
   return list;
 }
 
@@ -188,41 +185,47 @@ async function selftest() {
     colors: [{name: 'Белый', hex: '#fff'}, {name: ' ', hex: '#000000'}], hidden: 1});
   t(pj.name === 'Худи' && pj.price === 1500 && pj.images.length === 1 && pj.sizes.join() === 'S,M' && pj.out.join() === 'S' &&
     pj.colors.length === 1 && pj.colors[0].hex === '#A9AFB8' && pj.hidden === false, 'toProduct ' + JSON.stringify(pj));
-  // publish(): mocked fetch, must go ref -> commit -> blobs -> tree -> commit -> PATCH ref, nothing else
-  const calls = [], realFetch = window.fetch;
+  // CSP must allow exactly the API origin, and no GitHub
+  const csp = document.querySelector('meta[http-equiv="Content-Security-Policy"]').content;
+  t(csp.toLowerCase().includes(new URL(API).origin) && !csp.includes('github'), 'CSP connect-src matches API: ' + csp);
+  // login / publish / 401: mocked fetch for the Worker, nothing else may be called
+  const calls = [], realFetch = window.fetch, savedSess = sess.get();
+  let publishStatus = 200;
   window.fetch = async (url, o) => {
-    const method = (o && o.method) || 'GET', body = o && o.body ? JSON.parse(o.body) : null;
-    calls.push({method, url: url.replace('https://api.github.com', ''), body, auth: o.headers.Authorization});
-    const pick = x => ({ok: true, status: 200, json: async () => x});
-    if (url.endsWith('/git/ref/heads/main')) return pick({object: {sha: 'HEAD1'}});
-    if (url.endsWith('/git/commits/HEAD1')) return pick({tree: {sha: 'TREE0'}});
-    if (url.endsWith('/git/blobs')) return pick({sha: 'B' + calls.length});
-    if (url.endsWith('/git/trees')) return pick({sha: 'TREE1'});
-    if (url.endsWith('/git/commits')) return pick({sha: 'COMMIT1'});
-    if (url.endsWith('/git/refs/heads/main')) return pick({});
-    return {ok: false, status: 404, json: async () => ({})};
+    const path = url.slice(API.length), method = (o && o.method) || 'GET', body = o && o.body ? JSON.parse(o.body) : null;
+    calls.push({url, path, method, body, auth: o.headers.Authorization || ''});
+    const reply = (status, x) => ({ok: status < 400, status, json: async () => x});
+    if (!url.startsWith(API + '/')) return reply(404, {});
+    if (path === '/login') return body.password === 'right' ? reply(200, {token: 'TOK1', expires: 1}) : reply(401, {error: 'x'});
+    if (o.headers.Authorization !== 'Bearer TOK1') return reply(401, {error: 'x'});
+    if (path === '/publish') return reply(publishStatus, {ok: true});
+    if (path === '/products') return reply(200, {products: [{id: 'zip', name: 'Худи', price: 100, images: ['img/hoodie-zip.webp'], sizes: ['M'], out: [], colors: [], hidden: false}]});
+    return reply(404, {});
   };
   try {
+    sess.del();
+    try { await doLogin('wrong'); t(false, 'wrong password must throw'); } catch (e) { t(e.status === 401 && sess.get() === null, 'wrong password keeps the session empty'); }
+    await doLogin('right');
+    t(sess.get() === 'TOK1' && calls[1].path === '/login' && calls[1].body.password === 'right' && !calls[1].auth.includes('Bearer'), 'login stores the session');
+    t(localStorage.getItem(K_SESSION) === null, 'session is not in localStorage');
+    t((await api('/products')).products[0].id === 'zip' && calls.at(-1).auth === 'Bearer TOK1', 'GET /products sends the session');
     const start = [toProduct({id: 'zip', name: 'Худи', price: 100, images: ['img/hoodie-zip.webp', 'data:image/webp;base64,QUJD'], sizes: ['M'],
       colors: [{name: 'Белый', hex: '#EDEBE6', img: 'data:image/jpeg;base64,REVG'}]})];
-    const out = await publish(start, 'TOKEN');
-    const seq = calls.map(c => c.method + ' ' + c.url.replace(REPO_API, '').replace(/\/[A-Z0-9]+$/, ''));
-    t(seq.join('|') === ['GET /git/ref/heads/main', 'GET /git/commits', 'POST /git/blobs', 'POST /git/blobs', 'POST /git/blobs', 'POST /git/trees',
-      'POST /git/commits', 'PATCH /git/refs/heads/main'].join('|'), 'publish call order: ' + seq.join('|'));
-    const tree = calls.find(c => c.url.endsWith('/trees')).body;
-    const paths = tree.tree.map(x => x.path);
-    t(tree.base_tree === 'TREE0' && paths.length === 3 && paths[2] === 'toowear/products.json' &&
-      /^toowear\/img\/u-zip-[a-z0-9]+\.webp$/.test(paths[0]) && /^toowear\/img\/u-zip-[a-z0-9]+\.jpg$/.test(paths[1]), 'tree paths ' + paths);
-    const blobs = calls.filter(c => c.url.endsWith('/blobs')).map(c => c.body);
-    t(blobs[0].encoding === 'base64' && blobs[0].content === 'QUJD' && blobs[2].encoding === 'utf-8' && !blobs[2].content.includes('data:'), 'blob contents');
-    t(JSON.parse(blobs[2].content).products[0].images[1] === paths[0].replace('toowear/', ''), 'products.json points to the new photo');
-    t(out[0].images[1] === paths[0].replace('toowear/', ''), 'returned products use paths');
-    const cm = calls.find(c => c.url.endsWith('/git/commits') && c.method === 'POST').body;
-    t(cm.parents[0] === 'HEAD1' && cm.tree === 'TREE1' && cm.message === 'Обновление товаров', 'commit body');
-    t(calls[calls.length - 1].body.force === false && calls[calls.length - 1].body.sha === 'COMMIT1', 'ref update is not forced');
-    t(calls.every(c => c.url.startsWith(REPO_API)), 'only the repo API is called');
-  } catch (e) { t(false, 'publish threw ' + e.message); }
+    const out = await publish(start), c = calls.at(-1);
+    t(c.method === 'POST' && c.path === '/publish' && c.auth === 'Bearer TOK1', 'publish request');
+    const up = c.body.images;
+    t(up.length === 2 && /^img\/u-zip-[a-z0-9]+\.webp$/.test(up[0].path) && /^img\/u-zip-[a-z0-9]+\.jpg$/.test(up[1].path) &&
+      up[0].base64 === 'QUJD' && up[1].base64 === 'REVG', 'uploads have valid paths ' + JSON.stringify(up));
+    t(!JSON.stringify(c.body.products).includes('data:'), 'no data: URLs left in products');
+    t(c.body.products[0].images[1] === up[0].path && c.body.products[0].colors[0].img === up[1].path && out[0].images[1] === up[0].path, 'products point at the uploads');
+    t(start[0].images[1].startsWith('data:'), 'publish does not change its input');
+    t(calls.every(x => x.url.startsWith(API + '/')), 'only the API is called');
+    publishStatus = 401;
+    try { await publish(start); t(false, 'publish 401 must throw'); } catch (e) { t(e.status === 401 && sess.get() === null, '401 clears the session'); }
+    t(apiError({status: 401}) === 'Сессия закончилась, войдите снова.' && [0, 403, 409, 413, 429, 500].every(s => apiError({status: s}).length > 10), 'error texts');
+  } catch (e) { t(false, 'selftest threw ' + e.message); }
   window.fetch = realFetch;
+  if (savedSess) sess.set(savedSess); else sess.del();
   if (!bad) console.log('selftest ok');
 }
 
@@ -233,8 +236,8 @@ const ls = {
   set: (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
   del: k => { try { localStorage.removeItem(k); } catch (e) {} }
 };
-let mode = ls.get(K_TOKEN) ? 'real' : 'demo';
-let products = [], ready = false, dirty = false, view = 'list', editIx = -1, draft = null, ghNote = '', ghOk = false, busy = false;
+let mode = sess.get() ? 'real' : 'demo';
+let products = [], ready = false, dirty = false, view = 'list', editIx = -1, draft = null, busy = false;
 const key = () => mode === 'real' ? K_DRAFT : K_DEMO;
 
 function say(text, kind) {
@@ -256,27 +259,18 @@ async function loadProducts() {
       if (!r.ok) throw new Error('load');
       list = (await r.json()).products;
     } else {
-      // contents API (not the CDN), so the draft starts from what is really in the repo
-      const txt = await gh(ls.get(K_TOKEN), `${REPO_API}/contents/${DIR}/products.json?ref=${BRANCH}`, {accept: 'application/vnd.github.raw+json', raw: true});
-      list = JSON.parse(txt).products;
+      // via the Worker (not the Pages CDN), so the draft starts from what is really in the repo
+      list = (await api('/products')).products;
     }
   }
   products = list.map(toProduct); ready = true;
 }
 async function enterMode(m) {
-  mode = m; view = 'list'; ghNote = ''; ghOk = false; ready = false; products = []; say('Загрузка…'); render();
+  mode = m; view = 'list'; ready = false; products = []; say('Загрузка…'); render();
   try {
-    if (mode === 'real') {
-      const tok = ls.get(K_TOKEN);
-      if (!tok) { say(''); return render(); }
-      try {
-        const r = await gh(tok, REPO_API);
-        ghOk = true; ghNote = 'Ключ работает. Репозиторий: ' + r.full_name + '.' +
-          (r.permissions && r.permissions.push === false ? ' ВНИМАНИЕ: у ключа нет права записи.' : '');
-      } catch (e) { ghNote = ghError(e); if (e.status === 401) ls.del(K_TOKEN); }
-    }
+    if (mode === 'real' && !sess.get()) { say(''); return render(); }
     await loadProducts(); say('');
-  } catch (e) { say(e.status !== undefined ? ghError(e) : 'Не удалось загрузить список товаров. Обновите страницу.', 'bad'); }
+  } catch (e) { say(e.status !== undefined ? apiError(e) : 'Не удалось загрузить список товаров. Обновите страницу.', 'bad'); }
   render();
 }
 
@@ -304,28 +298,24 @@ async function addPhotos(files, apply) {
 
 /* ---------- views ---------- */
 function topHtml() {
-  const tok = ls.get(K_TOKEN);
   let h = `<div class="modes"><button data-a="mode" data-m="demo" aria-pressed="${mode === 'demo'}">ДЕМО</button>` +
-    `<button data-a="mode" data-m="real" aria-pressed="${mode === 'real'}">СОХРАНЕНИЕ НА САЙТ</button></div>`;
+    `<button data-a="mode" data-m="real" aria-pressed="${mode === 'real'}">ВХОД ДЛЯ МАГАЗИНА</button></div>`;
   if (mode === 'demo') {
     h += `<div class="banner"><p><b>ДЕМО.</b> Изменения видны только в этом браузере, на сайт они не попадают.</p>` +
       `<div class="row"><a class="btn" href="../" target="_blank" rel="noopener">Посмотреть на сайте</a><button data-a="resetdemo">Сбросить демо</button></div></div>`;
+  } else if (sess.get()) {
+    h += `<div class="banner real"><p><b>ВЫ ВОШЛИ.</b> Правки лежат в черновике, пока вы не нажмёте «Опубликовать».</p>` +
+      `<div class="row"><button class="pri" data-a="publish" ${ready && dirty && !busy ? '' : 'disabled'}>Опубликовать</button>` +
+      `<button data-a="reload">Загрузить с сайта заново</button><button data-a="logout">Выйти</button></div></div>`;
   } else {
-    h += `<div class="banner real"><p><b>СОХРАНЕНИЕ НА САЙТ.</b> ` + (tok ? 'Правки лежат в черновике, пока вы не нажмёте «Опубликовать».' : 'Чтобы сохранять на сайт, вставьте ключ GitHub.') + `</p>`;
-    if (tok) h += `<p class="muted">${esc(ghNote)}</p><div class="row"><button class="pri" data-a="publish" ${ready && dirty && !busy ? '' : 'disabled'}>Опубликовать</button>` +
-      `<button data-a="reload">Загрузить с сайта заново</button></div>`;
-    h += `<details ${tok ? '' : 'open'}><summary>Ключ GitHub</summary>` +
-      `<ol class="muted"><li>Откройте github.com/settings/personal-access-tokens и нажмите «Generate new token».</li>` +
-      `<li>Repository access: Only select repositories, выберите только <b>${esc(REPO)}</b>.</li>` +
-      `<li>Permissions, Repository permissions: <b>Contents: Read and write</b>.</li><li>Скопируйте ключ и вставьте ниже.</li></ol>` +
-      `<p class="muted">Ключ хранится только в этом браузере, на этом устройстве, и отправляется только на api.github.com.</p>` +
-      `<label class="f">Ключ<input type="password" id="tok" autocomplete="off" placeholder="github_pat_…"></label>` +
-      `<div class="row"><button class="pri" data-a="savetoken">Сохранить и проверить</button>${tok ? '<button class="danger" data-a="disconnect">Отключить</button>' : ''}</div></details></div>`;
+    h += `<div class="banner real"><p><b>ВХОД ДЛЯ МАГАЗИНА.</b> Введите пароль, чтобы сохранять товары на сайт.</p>` +
+      `<label class="f">Пароль<input type="password" id="pw" autocomplete="current-password"></label>` +
+      `<div class="row"><button class="pri" data-a="login">Войти</button></div></div>`;
   }
   return h;
 }
 function listHtml() {
-  if (mode === 'real' && !ls.get(K_TOKEN)) return '';
+  if (mode === 'real' && !sess.get()) return '';
   if (!ready) return '<p class="muted">Товары не загружены.</p>';
   return `<div class="sec"><button class="pri" data-a="add" style="width:100%">Добавить товар</button></div><ul>` + products.map((p, i) =>
     `<li class="item ${p.hidden ? 'hid' : ''}"><img src="${esc(thumb(p.images[0] || ''))}" alt="">` +
@@ -384,17 +374,23 @@ function savedMsg() {
 async function doPublish() {
   busy = true; say('Публикую… Не закрывайте страницу.'); render();
   try {
-    products = await publish(products, ls.get(K_TOKEN));
+    products = await publish(products);
     ls.del(K_DRAFT); dirty = false; say('Готово. Сайт обновится через 1–2 минуты.', 'ok');
-  } catch (e) { say(ghError(e), 'bad'); }
+  } catch (e) { say(apiError(e), 'bad'); }
   busy = false; render();
 }
-async function saveToken() {
-  const v = ($('#tok').value || '').trim();
-  if (!v) return say('Вставьте ключ в поле.', 'bad');
-  if (!ls.set(K_TOKEN, v)) return say('Браузер не дал сохранить ключ (приватный режим?).', 'bad');
+// password -> session token (kept for this tab only)
+async function doLogin(pw) {
+  const r = await api('/login', {method: 'POST', body: {password: pw}, login: true});
+  if (!sess.set(r.token)) { const x = new Error('storage'); x.status = -1; throw x; }
+}
+async function login() {
+  const pw = $('#pw').value;
+  if (!pw) return say('Введите пароль.', 'bad');
+  say('Вхожу…');
+  try { await doLogin(pw); } catch (e) { return say(e.status === 401 ? 'Неверный пароль.' : e.status === -1 ? 'Браузер не дал сохранить вход (приватный режим?).' : apiError(e), 'bad'); }
   await enterMode('real');
-  if (!ls.get(K_TOKEN)) say(ghNote, 'bad'); else if (ghOk) say('Ключ сохранён на этом устройстве.', 'ok');
+  if (sess.get()) say('Вы вошли.', 'ok');
 }
 
 /* ---------- events ---------- */
@@ -427,8 +423,8 @@ document.addEventListener('click', async ev => {
   if (a === 'mode') { if (b.dataset.m !== mode) enterMode(b.dataset.m); return; }
   if (a === 'resetdemo') { ls.del(K_DEMO); return enterMode('demo').then(() => say('Демо сброшено: снова показаны товары с сайта.', 'ok')); }
   if (a === 'reload') { if (!dirty || confirm('Черновик будет удалён, список загрузится с сайта. Продолжить?')) { ls.del(K_DRAFT); enterMode('real'); } return; }
-  if (a === 'disconnect') { if (dirty && !confirm('Неопубликованные правки будут удалены. Отключить ключ?')) return; ls.del(K_TOKEN); ls.del(K_DRAFT); return enterMode('demo').then(() => say('Ключ удалён с этого устройства.', 'ok')); }
-  if (a === 'savetoken') return saveToken();
+  if (a === 'logout') { if (dirty && !confirm('Неопубликованные правки будут удалены. Выйти?')) return; sess.del(); ls.del(K_DRAFT); return enterMode('demo').then(() => say('Вы вышли.', 'ok')); }
+  if (a === 'login') return login();
   if (a === 'publish') return doPublish();
   if (!ready) return;
   if (a === 'add') return startEdit(-1);
@@ -450,7 +446,11 @@ document.addEventListener('input', ev => {
   else draft[f] = t.value;
   const e = $('#e-' + f); if (e) e.textContent = '';
 });
-document.addEventListener('keydown', ev => { if (ev.key === 'Enter' && ev.target.id === 'custom') { ev.preventDefault(); document.querySelector('[data-a=addsize]').click(); } });
+document.addEventListener('keydown', ev => {
+  if (ev.key !== 'Enter') return;
+  if (ev.target.id === 'custom') { ev.preventDefault(); document.querySelector('[data-a=addsize]').click(); }
+  else if (ev.target.id === 'pw') { ev.preventDefault(); login(); }
+});
 document.addEventListener('change', ev => {
   const t = ev.target, files = [...(t.files || [])];
   if (t.matches('[data-photos]') && draft) addPhotos(files, u => draft.images.push(u));
