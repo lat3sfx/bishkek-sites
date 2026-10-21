@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Азрет: сайты для магазинов и барбершопов Бишкека</title>
+<meta name="description" content="Примеры сайтов для магазинов одежды и барбершопов: каталог с ценами, запись и заказ в WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16181d;--grey:#5c6370;--line:#e4e6ea;--soft:#f5f6f8}
+*{box-sizing:border-box;margin:0}
+body{font:400 16px/1.5 'Golos Text',system-ui,sans-serif;color:var(--ink);background:#fff}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+.intro{padding:56px 0 32px;max-width:760px}
+h1{font-size:clamp(30px,6vw,56px);line-height:1.05;letter-spacing:-.03em;font-weight:800}
+.intro p{font-size:18px;color:var(--grey);margin-top:16px;max-width:560px}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.btn{display:inline-flex;align-items:center;min-height:48px;padding:0 20px;border-radius:12px;font-weight:600;text-decoration:none}
+.btn.main{background:var(--ink);color:#fff}
+.btn.alt{border:1px solid var(--line)}
+.tabs{display:flex;gap:6px;margin:16px 0 8px;border-bottom:1px solid var(--line)}
+.tabs button{min-height:44px;padding:0 14px;font-weight:600;color:var(--grey);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs [aria-selected=true]{color:var(--ink);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:36px 20px;padding:28px 0 64px}
+.s{text-decoration:none;display:block}
+.s .shot{aspect-ratio:390/640;border-radius:18px;overflow:hidden;background:var(--soft);border:1px solid var(--line)}
+.s img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.s h2{font-size:19px;font-weight:600;margin-top:14px;letter-spacing:-.01em}
+.s p{color:var(--grey);font-size:15px;margin-top:2px}
+.s:hover h2{text-decoration:underline}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--grey);font-size:15px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="intro">
+    <h1>Делаю сайты для магазинов и барбершопов Бишкека</h1>
+    <p>Каталог с ценами и фото, запись на время, заказ одной кнопкой в WhatsApp или Telegram. Работает на любом телефоне. Первый вариант за 3 дня.</p>
+    <div class="cta">
+      <a class="btn main" id="wa" target="_blank" rel="noopener">Написать в WhatsApp</a>
+      <a class="btn alt" id="tg" target="_blank" rel="noopener">Написать в Telegram</a>
+    </div>
+  </section>
+  <div class="tabs" role="tablist" aria-label="Примеры">
+    <button role="tab" aria-selected="true" data-n="">Все примеры</button>
+    <button role="tab" aria-selected="false" data-n="clothes">Одежда</button>
+    <button role="tab" aria-selected="false" data-n="barber">Барбершопы</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+<footer><div class="wrap">Все магазины на примерах выдуманы. Фото: Wikimedia Commons, авторы указаны на каждом сайте.<br>Сайты не собирают личные данные и не ставят cookies. Шрифты загружаются с Google Fonts; кнопки заказа открывают WhatsApp или Telegram, и сообщение отправляете вы сами.</div></footer>
+<script>
+const PHONE = '996551080110', TG = 'lat3sfx';
+const SITES = [
+  ['pair', 'clothes', 'PAIR.kg', 'Каталог кроссовок: фильтр по бренду, размеру и цене, заказ всех пар одним сообщением'],
+  ['kocho', 'clothes', 'KÖCHÖ', 'Стритвир-дроп из контейнера на Дордое: таймер до нового дропа и размеры в наличии'],
+  ['boz', 'clothes', 'BOZ', 'Лукбук бренда одежды: нажмите на вещь на фото и соберите образ'],
+  ['toowear', 'clothes', 'TOO WEAR', 'Магазин как приложение в телефоне: карточка товара выезжает снизу, заказ в Telegram'],
+  ['sakal', 'barber', 'Сакал', 'Барбершоп в духе старой парикмахерской: прайс на табличке и запись на свободное время'],
+  ['chach', 'barber', 'ЧАЧ', 'Студия с несколькими мастерами: выбор мастера, дня и времени'],
+  ['taza', 'barber', 'Таза', 'Спокойная премиум-студия: отметьте услуги и сразу видно время и цену'],
+];
+const msg = encodeURIComponent('Здравствуйте! Посмотрел ваши примеры сайтов, хочу обсудить сайт для своего бизнеса.');
+document.getElementById('wa').href = `https://wa.me/${PHONE}?text=${msg}`;
+document.getElementById('tg').href = `https://t.me/${TG}?text=${msg}`;
+function show(niche) {
+  document.getElementById('grid').replaceChildren(...SITES.filter(s => !niche || s[1] === niche).map(([id, , name, about]) => {
+    const a = document.createElement('a'); a.className = 's'; a.href = `${id}/`;
+    a.innerHTML = `<div class="shot"><img src="hub-img/${id}.webp" alt="Главный экран сайта ${name} на телефоне" width="390" height="640" loading="lazy"></div><h2>${name}</h2><p>${about}</p>`;
+    return a;
+  }));
+  document.querySelectorAll('[role=tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.n === niche));
+}
+document.querySelectorAll('[role=tab]').forEach(b => b.onclick = () => show(b.dataset.n));
+show('');
+</script>
+</body>
+</html>

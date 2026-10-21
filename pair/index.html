@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>PAIR.kg: кроссовки в наличии в Бишкеке</title>
+<meta name="description" content="Оригинальные кроссовки в наличии в Бишкеке. Выберите модель и размер, закажите в WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f2f2f4;--ink:#111;--grey:#5b5f6b;--indigo:#3d2bd6;--line:#dcdde3;--wa:#25d366}
+*{box-sizing:border-box;margin:0}
+body{font:400 15px/1.45 Onest,system-ui,sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+:focus-visible{outline:3px solid var(--indigo);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+header{display:flex;align-items:center;justify-content:space-between;padding-top:14px;padding-bottom:6px}
+.logo{font-weight:800;font-size:20px;letter-spacing:-.03em}
+.logo span{color:var(--indigo)}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px}
+.lang button{min-width:44px;min-height:36px;border-radius:999px;font-weight:600;font-size:13px}
+.lang [aria-pressed=true]{background:var(--ink);color:#fff}
+.count{font-weight:800;font-size:clamp(40px,11vw,88px);line-height:.95;letter-spacing:-.045em;margin:18px 0 6px}
+.count small{display:block;font-size:clamp(17px,3.4vw,24px);letter-spacing:-.01em;font-weight:600;color:var(--grey);margin-top:8px}
+.search{position:relative;margin:16px 0 4px}
+.search input{width:100%;height:48px;border-radius:14px;border:0;background:var(--paper);padding:0 16px;font-size:16px}
+.search input::placeholder{color:var(--grey)}
+.filters{display:grid;gap:12px;margin:14px 0 6px}
+.frow{display:flex;gap:8px;align-items:center;min-width:0}
+.frow > .chips{min-width:0}
+.frow > b{font-weight:600;font-size:13px;color:var(--grey);min-width:62px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:44px;padding:0 14px;border-radius:999px;background:var(--paper);font-weight:600;font-size:14px;white-space:nowrap}
+.chip[aria-pressed=true]{background:var(--indigo);color:#fff}
+.price{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.price input{flex:1;min-width:0;accent-color:var(--indigo);min-height:40px}
+.price output{font-weight:600;min-width:92px;text-align:right}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 12px;padding:20px 0 40px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1040px){.grid{grid-template-columns:repeat(4,1fr);gap:32px 20px}}
+.card img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:14px;background:var(--paper)}
+.card .brand{font-size:12px;color:var(--grey);margin-top:10px}
+.card h2{font-size:15px;font-weight:600;line-height:1.25;margin-top:1px}
+.card .pr{font-weight:800;font-size:16px;margin-top:4px}
+.sizes{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.sz{min-width:44px;min-height:44px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-weight:600}
+.sz.match{border-color:var(--indigo);color:var(--indigo)}
+.sz[aria-pressed=true]{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.empty{grid-column:1/-1;padding:40px 0;text-align:left}
+.empty p{font-size:22px;font-weight:600;margin-bottom:14px}
+.btn{min-height:48px;padding:0 20px;border-radius:14px;font-weight:600;background:var(--ink);color:#fff}
+footer{background:var(--paper);padding:28px 0 120px;font-size:14px;color:var(--grey)}
+footer .wrap{display:grid;gap:14px}
+footer a{color:var(--ink)}
+footer .demo{color:var(--ink);font-weight:600}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);transform:translateY(110%);transition:transform .25s ease}
+.bar.on{transform:none}
+.bar .wrap{display:grid;gap:8px;padding:0}
+.picks{display:none;max-height:40vh;overflow:auto;list-style:none;padding:0}
+.bar.open .picks{display:block}
+.picks li{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
+.picks img{width:44px;height:44px;border-radius:8px;object-fit:cover}
+.picks span{flex:1;font-size:14px}
+.picks button{min-height:44px;padding:0 8px;color:var(--grey);font-size:13px;text-decoration:underline}
+.barrow{display:flex;gap:8px;align-items:center}
+.sum{flex:1;text-align:left;min-height:48px;font-weight:600;line-height:1.2}
+.sum small{display:block;font-weight:400;color:var(--grey);font-size:13px}
+.wa{min-height:52px;padding:0 18px;border-radius:14px;background:var(--wa);color:#063b1b;font-weight:800;display:flex;align-items:center;text-decoration:none}
+@media(prefers-reduced-motion:reduce){.bar{transition:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">PAIR<span>.kg</span></div>
+    <div class="lang" role="group" aria-label="Язык">
+      <button data-lang="ru" aria-pressed="true">RU</button><button data-lang="kg" aria-pressed="false">KG</button>
+    </div>
+  </header>
+  <main>
+    <h1 class="count" aria-live="polite"><span id="n">24</span> <span id="nword">пары</span><small id="nsub" data-i18n="sub">в наличии в Бишкеке</small></h1>
+    <div class="search"><label class="sr" for="q" data-i18n="search">Найти модель</label><input id="q" type="search" autocomplete="off" data-i18n-ph="search" placeholder="Найти модель"></div>
+    <div class="filters">
+      <div class="frow"><b data-i18n="brand">Бренд</b><div class="chips" id="brands"></div></div>
+      <div class="frow"><b data-i18n="size">Размер</b><div class="chips" id="sizes"></div></div>
+      <div class="frow"><b><label for="max" data-i18n="price">Цена до</label></b><div class="price"><input id="max" type="range" min="5000" max="17000" step="500" value="17000"><output id="maxo" for="max"></output></div></div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+<footer>
+  <div class="wrap">
+    <div><b style="color:var(--ink)">PAIR.kg</b><br><a href="https://2gis.kg/bishkek/search/%D0%90%D1%85%D1%83%D0%BD%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20112" target="_blank" rel="noopener" data-i18n="addr">ул. Ахунбаева 112, 2 этаж</a><br><span data-i18n="hours">Каждый день 11:00–21:00</span><br><a href="#" data-i18n="ig">Instagram</a></div>
+    <div data-i18n="about">Только оригинал. Примерка в магазине, доставка по Бишкеку в день заказа.</div>
+    <a class="demo" id="demo" href="#" target="_blank" rel="noopener" data-i18n="demo">Демо-сайт. Хотите такой же для своего магазина? Написать Азрету</a>
+    <a href="CREDITS.md" data-i18n="credits">Фото: Wikimedia Commons, авторы и лицензии</a>
+  </div>
+</footer>
+<div class="bar" id="bar">
+  <div class="wrap">
+    <ul class="picks" id="picks"></ul>
+    <div class="barrow">
+      <button class="sum" id="sum" aria-expanded="false" aria-controls="picks"></button>
+      <a class="wa" id="wa" target="_blank" rel="noopener" data-i18n="order">Заказать в WhatsApp</a>
+    </div>
+  </div>
+</div>
+<script>
+const PHONE = '996551080110', TG = 'lat3sfx';
+
+// shop data: replace with the client's stock
+const PRODUCTS = [
+  ['af1-white','Nike','Air Force 1 ’07 White',7200,[39,40,41,42,43,44]],
+  ['nb550','New Balance','550 White Burgundy',8900,[38,40,41,42]],
+  ['sb-dunk-black','Nike','SB Dunk Low Black Gum',8400,[41,42,43,44,45]],
+  ['dunk-green','Nike','Dunk Low Varsity Green',9500,[40,42,43]],
+  ['grand-court','Adidas','Grand Court Black',5400,[39,40,41,42,43,44,45]],
+  ['suede-mustard','Adidas','Originals Suede Mustard',6900,[41,42]],
+  ['gazelle-bold','Adidas','Gazelle Bold Grey',9200,[36,37,38,39]],
+  ['gazelle-blue','Adidas','Gazelle Indoor Blue',8800,[38,39,40,41,42,43]],
+  ['am90-red','Nike','Air Max 90 Red',9900,[42,43,44]],
+  ['am90-white','Nike','Air Max 90 White',9400,[38,39,40,41,42]],
+  ['am90-black','Nike','Air Max 90 Triple Black',9400,[41,42,43,44,45,46]],
+  ['chuck70-black','Converse','Chuck 70 High Black',5900,[36,37,38,39,40,41,42,43]],
+  ['oldskool-blue','Vans','Old Skool Blue',4900,[38,39,40,41,42]],
+  ['gel-lyte','Asics','Gel-Lyte III',8200,[42,43,44]],
+  ['suede-black','Puma','Suede Classic Black',5600,[40,41,42,43,44]],
+  ['suede-pink','Puma','Suede Platform Pink',5900,[36,37,38,39]],
+  ['aj4-seafoam','Jordan','Air Jordan 4 Seafoam',14900,[42,43]],
+  ['aj1-mid-bred','Jordan','Air Jordan 1 Mid Bred',11500,[40,41,42,43,44]],
+  ['aj1-chicago','Jordan','Air Jordan 1 High Chicago',16900,[43]],
+  ['aj4-cement','Jordan','Air Jordan 4 White Cement',15500,[41,42,44]],
+  ['superstar-black','Adidas','Superstar Black',6500,[39,40,41,42,43]],
+  ['superstar-white','Adidas','Superstar White',6500,[36,37,38,39,40,41,42,43,44]],
+  ['am1-red','Nike','Air Max 1 Sport Red',10900,[40,41,42]],
+  ['tn-black','Nike','Air Max Plus TN Black',11900,[41,42,43,44,45]],
+].map(([id, brand, name, price, sizes]) => ({id, brand, name, price, sizes, img: `img/${id}.webp`}));
+
+const I18N = {
+  ru: {sub:'в наличии в Бишкеке', search:'Найти модель', brand:'Бренд', size:'Размер', price:'Цена до', all:'Все',
+    empty:'Таких пар сейчас нет', reset:'Сбросить фильтры', order:'Заказать в WhatsApp', picks:'Ваш заказ', remove:'Убрать',
+    hint:'Нажмите на размер, чтобы добавить', add:'Добавить', sizeWord:'размер', addr:'ул. Ахунбаева 112, 2 этаж', hours:'Каждый день 11:00–21:00', ig:'Instagram',
+    about:'Только оригинал. Примерка в магазине, доставка по Бишкеку в день заказа.',
+    demo:'Демо-сайт. Хотите такой же для своего магазина? Написать Азрету', credits:'Фото: Wikimedia Commons, авторы и лицензии',
+    pairs:['пара','пары','пар'], fits:'подходят', show:'показать список', hide:'скрыть список'},
+  kg: {sub:'Бишкекте бар', search:'Модель издөө', brand:'Бренд', size:'Өлчөм', price:'Баасы', all:'Баары',
+    empty:'Мындай жуп азыр жок', reset:'Чыпкаларды тазалоо', order:'WhatsApp аркылуу буйрутма', picks:'Сиздин буйрутма', remove:'Алып салуу',
+    hint:'Кошуу үчүн өлчөмдү басыңыз', add:'Кошуу', sizeWord:'өлчөм', addr:'Ахунбаев көч. 112, 2-кабат', hours:'Күн сайын 11:00–21:00', ig:'Instagram',
+    about:'Оригинал гана. Дүкөндө кийип көрүүгө болот, Бишкек боюнча ошол эле күнү жеткиребиз.',
+    demo:'Демо-сайт. Дүкөнүңүзгө ушундай сайт керекпи? Азретке жазыңыз', credits:'Сүрөттөр: Wikimedia Commons, авторлору жана лицензиялары',
+    pairs:['жуп','жуп','жуп'], fits:'туура келет', show:'тизмени көрсөтүү', hide:'тизмени жашыруу'},
+};
+
+let lang = 'ru';
+const t = k => I18N[lang][k];
+const fmt = n => n.toLocaleString('ru-RU').replace(/\s/g, ' ') + ' с';
+const waLink = msg => `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
+const tgLink = msg => `https://t.me/${TG}?text=${encodeURIComponent(msg)}`;
+const orderMessage = items => 'Здравствуйте! Хочу заказать:\n' +
+  items.map(i => '— ' + [i.name, i.size, i.color, fmt(i.price)].filter(Boolean).join(', ')).join('\n') +
+  '\nИтого: ' + fmt(items.reduce((s, i) => s + i.price, 0));
+const plural = (n, [one, few, many]) => n % 10 === 1 && n % 100 !== 11 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? few : many;
+
+function filterProducts(list, {brands = [], size = null, maxPrice = Infinity, q = ''} = {}) {
+  q = q.trim().toLowerCase();
+  return list.filter(p => (!brands.length || brands.includes(p.brand)) && (size == null || p.sizes.includes(size)) &&
+    p.price <= maxPrice && (!q || (p.brand + ' ' + p.name).toLowerCase().includes(q)));
+}
+
+const state = {brands: [], size: null, maxPrice: 17000, q: '', picks: []}; // picks: {id, size}
+const $ = id => document.getElementById(id);
+const BRANDS = [...new Set(PRODUCTS.map(p => p.brand))];
+const SIZES = [...new Set(PRODUCTS.flatMap(p => p.sizes))].sort((a, b) => a - b);
+const picked = (id, size) => state.picks.some(p => p.id === id && p.size === size);
+
+function chip(label, pressed, onclick) {
+  const b = document.createElement('button');
+  b.className = 'chip'; b.textContent = label; b.setAttribute('aria-pressed', pressed); b.onclick = onclick;
+  return b;
+}
+
+function renderFilters() {
+  $('brands').replaceChildren(chip(t('all'), !state.brands.length, () => { state.brands = []; render(); }),
+    ...BRANDS.map(b => chip(b, state.brands.includes(b), () => {
+      state.brands = state.brands.includes(b) ? state.brands.filter(x => x !== b) : [...state.brands, b]; render();
+    })));
+  $('sizes').replaceChildren(chip(t('all'), state.size == null, () => { state.size = null; render(); }),
+    ...SIZES.map(s => chip(s, state.size === s, () => { state.size = state.size === s ? null : s; render(); })));
+  $('maxo').value = fmt(state.maxPrice);
+}
+
+function renderGrid() {
+  const list = filterProducts(PRODUCTS, state);
+  $('n').textContent = list.length;
+  $('nword').textContent = plural(list.length, t('pairs'));
+  $('nsub').textContent = (state.brands.length || state.size || state.q || state.maxPrice < 17000) ? t('fits') : t('sub');
+  if (!list.length) {
+    const e = document.createElement('div'); e.className = 'empty';
+    e.innerHTML = `<p>${t('empty')}</p>`;
+    e.append(Object.assign(document.createElement('button'), {className: 'btn', textContent: t('reset'), onclick: resetFilters}));
+    return $('grid').replaceChildren(e);
+  }
+  $('grid').replaceChildren(...list.map(p => {
+    const c = document.createElement('article'); c.className = 'card';
+    c.innerHTML = `<img src="${p.img}" alt="${p.brand} ${p.name}" width="440" height="440" loading="lazy">
+      <div class="brand">${p.brand}</div><h2>${p.name}</h2><div class="pr">${fmt(p.price)}</div>
+      <div class="sizes" role="group" aria-label="${t('hint')}"></div>`;
+    c.querySelector('.sizes').append(...p.sizes.map(s => {
+      const b = document.createElement('button');
+      b.className = 'sz' + (s === state.size ? ' match' : ''); b.textContent = s;
+      b.setAttribute('aria-pressed', picked(p.id, s));
+      b.setAttribute('aria-label', `${t('add')}: ${p.brand} ${p.name}, ${t('sizeWord')} ${s}`);
+      b.onclick = () => togglePick(p.id, s);
+      return b;
+    }));
+    return c;
+  }));
+}
+
+function togglePick(id, size) {
+  state.picks = picked(id, size) ? state.picks.filter(p => !(p.id === id && p.size === size)) : [...state.picks, {id, size}];
+  render();
+}
+
+function pickItems() {
+  return state.picks.map(({id, size}) => { const p = PRODUCTS.find(x => x.id === id); return {...p, name: p.name.includes(p.brand) ? p.name : `${p.brand} ${p.name}`, size}; });
+}
+
+function renderBar() {
+  const items = pickItems();
+  $('bar').classList.toggle('on', items.length > 0);
+  const open = $('bar').classList.contains('open');
+  $('sum').innerHTML = `${items.length} ${plural(items.length, t('pairs'))}, ${fmt(items.reduce((s, i) => s + i.price, 0))}<small>${open ? t('hide') : t('show')}</small>`;
+  $('wa').href = items.length ? waLink(orderMessage(items)) : '#';
+  $('picks').replaceChildren(...items.map(i => {
+    const li = document.createElement('li');
+    li.innerHTML = `<img src="${i.img}" alt=""><span>${i.name}, ${i.size}<br><b>${fmt(i.price)}</b></span>`;
+    li.append(Object.assign(document.createElement('button'), {textContent: t('remove'), onclick: () => togglePick(i.id, i.size)}));
+    return li;
+  }));
+  if (!items.length) { $('bar').classList.remove('open'); $('sum').setAttribute('aria-expanded', 'false'); }
+}
+
+function resetFilters() { Object.assign(state, {brands: [], size: null, maxPrice: 17000, q: ''}); $('q').value = ''; $('max').value = 17000; render(); }
+function render() { renderFilters(); renderGrid(); renderBar(); }
+
+function setLang(l) {
+  lang = I18N[l] ? l : 'ru';
+  document.documentElement.lang = lang === 'kg' ? 'ky' : 'ru';
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => el.placeholder = t(el.dataset.i18nPh));
+  document.querySelectorAll('.lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang));
+  try { localStorage.setItem('lang', lang); } catch (e) {}
+  render();
+}
+
+document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.lang));
+$('q').oninput = e => { state.q = e.target.value; renderGrid(); };
+$('max').oninput = e => { state.maxPrice = +e.target.value; $('maxo').value = fmt(state.maxPrice); renderGrid(); };
+$('sum').onclick = () => { const o = $('bar').classList.toggle('open'); $('sum').setAttribute('aria-expanded', o); renderBar(); };
+$('wa').onclick = e => { if (!state.picks.length) e.preventDefault(); };
+$('demo').href = waLink('Здравствуйте! Увидел демо-сайт PAIR.kg, хочу такой же для своего магазина.');
+let saved = 'ru'; try { saved = localStorage.getItem('lang') || 'ru'; } catch (e) {}
+setLang(saved);
+
+if (location.search.includes('selftest')) {
+  const nike = filterProducts(PRODUCTS, {brands: ['Nike'], size: 42, maxPrice: 7000, q: ''});
+  const msg = orderMessage([{name: 'Samba OG', size: 42, price: 6800}, {name: 'Air Force 1', size: 43, price: 7200}]);
+  const fails = [
+    [fmt(4900) === '4 900 с', 'fmt'],
+    [nike.every(p => p.brand === 'Nike' && p.sizes.includes(42) && p.price <= 7000), 'filter brand/size/price'],
+    [filterProducts(PRODUCTS, {brands: ['Nope']}).length === 0, 'filter unknown brand'],
+    [filterProducts(PRODUCTS, {q: 'jordan 4'}).length === 2, 'search'],
+    [msg.split('\n').filter(l => l.startsWith('—')).length === 2 && msg.endsWith('Итого: 14 000 с'), 'orderMessage'],
+    [waLink('a b').endsWith('text=a%20b'), 'waLink'],
+    [plural(21, I18N.ru.pairs) === 'пара' && plural(3, I18N.ru.pairs) === 'пары' && plural(12, I18N.ru.pairs) === 'пар', 'plural'],
+  ].filter(([ok]) => !ok).map(([, name]) => name);
+  console.log(fails.length ? 'selftest FAILED: ' + fails.join(', ') : 'selftest ok');
+}
+</script>
+</body>
+</html>

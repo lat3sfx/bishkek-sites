@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Таза: мужская студия в Бишкеке</title>
+<meta name="description" content="Стрижка, борода и бритьё опасной бритвой. Отметьте услуги, увидите время и цену, запишитесь в WhatsApp.">
+<meta name="theme-color" content="#DFE5DE">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sage:#DFE5DE; --sage-l:#F4F6F3; --char:#2A302B; --muted:#4F5850; --moss:#5E7052;
+  --serif:'Cormorant Garamond','Iowan Old Style','Palatino Linotype',Georgia,serif;
+  --sans:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--sage-l);-webkit-text-size-adjust:100%}
+body{margin:0;font:400 17px/1.7 var(--sans);color:var(--char);background:var(--sage-l)}
+html.kg-sans:lang(ky) .serif{font-family:var(--sans)} /* class set by JS only if the serif lacks ө ү ң */
+img{display:block;max-width:100%;height:auto}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--char);outline-offset:3px}
+.wrap{max-width:40rem;margin:0 auto;padding:0 22px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* top */
+.top{display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{font:600 30px/1 var(--serif);letter-spacing:.01em}
+.lang{display:flex}
+.lang button{min-width:44px;height:44px;border:0;background:none;font-size:14px;font-weight:600;color:var(--muted);border-radius:8px}
+.lang button[aria-pressed=true]{color:var(--char);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:var(--moss)}
+
+/* hero */
+.hero{background:var(--sage);padding-bottom:0}
+h1,h2{font-family:var(--serif);font-weight:500;margin:0;letter-spacing:-.005em;text-wrap:balance}
+h1{font-size:clamp(3rem,13vw,5.2rem);line-height:.98;padding-top:20px}
+.lead{margin:22px 0 0;max-width:30ch;color:var(--muted);font-size:18px}
+.jump{display:inline-flex;align-items:center;min-height:48px;margin-top:20px;font-weight:600;color:var(--char);text-underline-offset:5px;text-decoration-color:var(--moss);text-decoration-thickness:2px}
+.hero figure{margin:12px auto 0;width:min(78%,320px)}
+.hero img{width:100%;mix-blend-mode:multiply;animation:settle 1.4s cubic-bezier(.2,.7,.2,1) both}
+@keyframes settle{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* services */
+section{padding:72px 0 0}
+h2{font-size:clamp(2.1rem,8vw,2.8rem);line-height:1.08}
+.hint{margin:12px 0 0;color:var(--muted);max-width:34ch}
+.list{margin:32px 0 0;padding:0;list-style:none;border-top:1px solid var(--sage)}
+.svc{position:relative;display:grid;grid-template-columns:28px 1fr auto;gap:0 16px;align-items:center;min-height:76px;
+  padding:14px 12px;margin:0 -12px;border-bottom:1px solid var(--sage);cursor:pointer;border-radius:4px;transition:background-color 160ms ease-out}
+.svc:has(input:checked){background:var(--sage)}
+.svc input{position:absolute;opacity:0;width:44px;height:44px;left:0;top:50%;margin-top:-22px}
+.box{width:26px;height:26px;border:1.5px solid var(--moss);border-radius:7px;background:var(--sage-l);display:grid;place-items:center}
+.box::after{content:"";width:6px;height:12px;border:solid var(--sage-l);border-width:0 2px 2px 0;transform:rotate(40deg) translate(-1px,-1px) scale(0);transition:transform 140ms ease-out}
+.svc input:checked + .box{background:var(--moss)}
+.svc input:checked + .box::after{transform:rotate(40deg) translate(-1px,-1px) scale(1)}
+.svc input:focus-visible + .box{outline:2px solid var(--char);outline-offset:3px}
+.nm b{display:block;font-weight:600;line-height:1.3}
+.nm small{display:block;font-size:14px;line-height:1.45;color:var(--muted)}
+.meta{text-align:right;font-variant-numeric:tabular-nums;line-height:1.35}
+.meta span{display:block}
+.meta .m{font-size:14px;color:var(--muted)}
+.meta .p{font-weight:600}
+
+/* sticky total */
+.stick{position:sticky;bottom:0;margin-top:40px;padding:0}
+.bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 16px;
+  padding:14px 22px calc(14px + env(safe-area-inset-bottom));background:var(--char);color:var(--sage-l);border-radius:14px 14px 0 0}
+.sum{flex:0 0 auto;white-space:nowrap;font-variant-numeric:lining-nums tabular-nums}
+.sum .price{display:block;font:600 30px/1.05 var(--serif)}
+.sum .time{display:block;font-size:14px;color:#C9D2C7}
+.sum .none{font-size:15px;color:#C9D2C7}
+.book{line-height:1.3;flex:1 1 13rem;max-width:100%;min-height:48px;padding:0 20px;border:0;border-radius:10px;background:var(--sage-l);color:var(--char);font-weight:600;cursor:pointer}
+.book:disabled{background:transparent;box-shadow:inset 0 0 0 1.5px #8C998A;color:#C9D2C7;cursor:not-allowed}
+.book:active:not(:disabled){transform:scale(.97)}
+.bar :focus-visible{outline-color:var(--sage-l)}
+
+/* studio + visit */
+.studio p,.visit p{margin:16px 0 0;max-width:36ch;color:var(--muted)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:32px auto 0;max-width:46rem;padding:0 22px}
+.tile{background:var(--sage);border-radius:6px;overflow:hidden;aspect-ratio:1;display:grid;place-items:center}
+.tile img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.photos{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;margin:32px auto 0;max-width:46rem;padding:0 22px}
+.photos img{width:100%;height:100%;object-fit:cover;border-radius:6px;background:var(--sage)}
+.photos .tall{grid-row:span 2;aspect-ratio:2/3}
+.photos .wide{aspect-ratio:4/3}
+dl{margin:28px 0 0;display:grid;grid-template-columns:auto 1fr;gap:6px 24px}
+dt{color:var(--muted)}
+dd{margin:0}
+a{color:var(--char);text-underline-offset:4px;text-decoration-color:var(--moss)}
+a.t{display:inline-block;min-height:44px;line-height:44px;margin:-10px 0}
+
+footer{margin-top:80px;padding:32px 0 48px;background:var(--sage);font-size:15px;line-height:1.6}
+footer p{margin:0}
+footer .demo{margin-top:6px;color:var(--muted)}
+
+@media (min-width:900px){
+  .hero{position:relative;min-height:640px}
+  .hero figure{position:absolute;left:calc(50% + 8rem);top:56px;width:340px;margin:0}
+}
+@media (min-width:760px){
+  .hero figure{width:340px}
+  .wrap{padding:0 32px}
+}
+@media (prefers-reduced-motion:reduce){
+  .hero img{animation:none}
+  .svc,.box::after{transition:none}
+  .book:active:not(:disabled){transform:none}
+}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="wrap">
+    <div class="top">
+      <span class="logo serif">Таза</span>
+      <div class="lang" role="group" aria-label="Язык / Тил">
+        <button type="button" data-lang="ru" aria-pressed="true">RU</button>
+        <button type="button" data-lang="kg" aria-pressed="false">KG</button>
+      </div>
+    </div>
+    <h1 class="serif" data-i18n="h1"></h1>
+    <p class="lead" data-i18n="lead"></p>
+    <a class="jump" href="#services" data-i18n="jump"></a>
+  </div>
+  <figure><img src="img/brush.webp" width="840" height="1200" alt="Помазок для бритья из барсучьего ворса на белой подставке"></figure>
+</div>
+
+<main>
+<section id="services">
+  <div class="wrap">
+    <h2 class="serif" data-i18n="h2"></h2>
+    <p class="hint" data-i18n="hint"></p>
+    <ul class="list" id="list"></ul>
+  </div>
+  <div class="wrap stick">
+    <div class="bar" id="bar">
+      <div class="sum">
+        <span class="none" id="none" data-i18n="none"></span>
+        <span class="price" id="t-price" hidden></span>
+        <span class="time" id="t-time" hidden></span>
+      </div>
+      <button type="button" class="book" id="book" disabled></button>
+    </div>
+  </div>
+  <span class="sr" id="sr" aria-live="polite"></span>
+</section>
+
+<section class="studio">
+  <div class="wrap">
+    <h2 class="serif" data-i18n="h3"></h2>
+    <p data-i18n="studio"></p>
+  </div>
+  <div class="pair">
+    <div class="tile"><img src="img/stand.webp" width="876" height="1200" loading="lazy" alt="Помазок и безопасная бритва на хромированной подставке"></div>
+    <div class="tile"><img src="img/razor.webp" width="1200" height="1200" loading="lazy" alt="Опасная бритва с белой ручкой"></div>
+  </div>
+</section>
+
+<section class="visit">
+  <div class="wrap">
+    <h2 class="serif" data-i18n="h4"></h2>
+    <dl>
+      <dt data-i18n="addr"></dt>
+      <dd><a class="t" id="addr" target="_blank" rel="noopener"></a></dd>
+      <dt data-i18n="hours"></dt>
+      <dd><span data-i18n="h1v"></span><br><span data-i18n="h2v"></span></dd>
+      <dt>Instagram</dt>
+      <dd><a class="t" href="#">@taza.studio</a></dd>
+    </dl>
+  </div>
+  <div class="photos">
+    <img class="tall" src="img/plant.webp" width="800" height="1200" loading="lazy" alt="Комнатное растение в белом горшке">
+    <img class="wide" src="img/towel.webp" width="1200" height="970" loading="lazy" alt="Белое полотенце, мыло для бритья в чашке, помазок и бритва">
+    <img class="wide" src="img/mug.webp" width="1200" height="900" loading="lazy" alt="Чашка с пеной для бритья, бритва и помазок">
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><a class="t" href="CREDITS.md" data-i18n="credits"></a></p>
+    <p class="demo"><span data-i18n="demo"></span> <a class="t" id="demo" target="_blank" rel="noopener" data-i18n="demoLink"></a></p>
+  </div>
+</footer>
+
+<script>
+const PHONE = '996551080110', TG = 'lat3sfx';
+
+/* Services: replace this list with the client's real ones. min = minutes. */
+const SERVICES = [
+  {name:'Мужская стрижка',      note:'Ножницы и машинка, мытьё головы',        min:45, price:800},
+  {name:'Королевское бритьё',   note:'Опасная бритва, горячее полотенце',      min:40, price:700},
+  {name:'Моделирование бороды', note:'Форма, контур, масло',                   min:30, price:500},
+  {name:'Детская стрижка',      note:'До 12 лет',                              min:30, price:600},
+  {name:'Тонирование',          note:'Седина в бороде или волосах',            min:40, price:900},
+  {name:'Уход за лицом',        note:'Очищение и маска',                       min:20, price:600},
+  {name:'Укладка',              note:'Воск или паста, на ваш выбор',           min:15, price:300}
+];
+
+const I18N = {
+  ru:{h1:'Стрижка без спешки', lead:'Мужская студия на Токтогула. Стрижка, борода и бритьё опасной бритвой.', jump:'Выбрать услуги',
+      h2:'Что вам нужно?', hint:'Отметьте всё нужное. Время и цена сложатся сами.', none:'Ничего не выбрано',
+      book:'Записаться в WhatsApp', pick:'Выберите услуги', hrs:'ч', mins:'мин',
+      h3:'Тихо и без очереди', studio:'Принимаем только по записи, поэтому в студии спокойно и никто не ждёт. Чай и горячие полотенца за наш счёт.',
+      h4:'Как нас найти', addr:'Адрес', addrV:'улица Токтогула, 138', hours:'Часы работы', h1v:'Пн–Сб: 10:00–21:00', h2v:'Вс: 11:00–19:00',
+      credits:'Фото и лицензии', demo:'Демо-сайт. Хотите такой же для своего магазина?', demoLink:'Написать Азрету'},
+  kg:{h1:'Шашпай кырктырыңыз', lead:'Токтогул көчөсүндөгү эркектер студиясы.', jump:'Кызматтарды тандоо',
+      h2:'Эмне керек?', hint:'Керектүүсүн белгилеңиз. Убакыт менен баасы өзү кошулат.', none:'Тандалган жок',
+      book:'WhatsApp аркылуу жазылуу', pick:'Кызмат тандаңыз', hrs:'саат', mins:'мүн',
+      h3:'Тынч жана кезексиз', studio:'Алдын ала жазылуу боюнча кабыл алабыз: тынч, күтүү жок.',
+      h4:'Бизди табыңыз', addr:'Дарек', addrV:'Токтогул көчөсү, 138', hours:'Иш убактысы', h1v:'Дш–Иш: 10:00–21:00', h2v:'Жк: 11:00–19:00',
+      credits:'Сүрөттөр', demo:'Демо-сайт. Дүкөнүңүзгө ушундай сайт керекпи?', demoLink:'Азретке жазуу'}
+};
+const MSG = {hello:'Здравствуйте! Хочу записаться:', total:'Итого', when:'Подскажите, когда есть свободное время?'}; // messages are always Russian
+
+/* ---------- pure helpers (checked by ?selftest) ---------- */
+const NB = ' ';
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, NB) + NB + 'с';
+const waLink = msg => `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
+const tgLink = msg => `https://t.me/${TG}?text=${encodeURIComponent(msg)}`;
+const fmtDuration = (min, u = {hrs:'ч', mins:'мин'}) => {
+  const h = Math.floor(min / 60), m = min % 60;
+  return [h && `${h} ${u.hrs}`, (m || !h) && `${m} ${u.mins}`].filter(Boolean).join(' ');
+};
+const totals = list => list.reduce((t, s) => ({min: t.min + s.min, price: t.price + s.price}), {min:0, price:0});
+const bookingMessage = ({services, barber, day, time}) => {
+  const t = totals(services);
+  return [MSG.hello,
+    ...services.map(s => '— ' + [s.name, s.min && fmtDuration(s.min), fmt(s.price)].filter(Boolean).join(', ')),
+    barber && `Мастер: ${barber}`,
+    day && time ? `Когда: ${day}, ${time}` : MSG.when,
+    `${MSG.total}: ${fmtDuration(t.min)}, ${fmt(t.price)}`].filter(Boolean).join('\n');
+};
+
+if (location.search.includes('selftest')) {
+  let bad = 0;
+  const t = (ok, msg) => { if (!ok) { bad++; console.error('FAIL: ' + msg); } };
+  t(fmtDuration(85) === '1 ч 25 мин', 'fmtDuration 85');
+  t(fmtDuration(40) === '40 мин', 'fmtDuration 40');
+  t(fmtDuration(60) === '1 ч', 'fmtDuration 60');
+  t(fmtDuration(0) === '0 мин', 'fmtDuration 0');
+  const tt = totals([{min:45, price:800}, {min:40, price:700}]);
+  t(tt.min === 85 && tt.price === 1500, 'totals');
+  t(fmt(1500) === '1' + NB + '500' + NB + 'с', 'fmt');
+  const m = bookingMessage({services:[SERVICES[0], SERVICES[1]]});
+  t(m.split('\n').filter(l => l.startsWith('—')).length === 2, 'two service lines');
+  t(m.endsWith('Итого: 1 ч 25 мин, ' + fmt(1500)), 'total line');
+  t(bookingMessage({services:[SERVICES[0]], day:'вт 22 окт', time:'15:00'}).includes('Когда: вт 22 окт, 15:00'), 'day and time');
+  t(waLink('a b').endsWith('text=a%20b'), 'waLink');
+  t(Object.keys(I18N.ru).every(k => k in I18N.kg), 'every ru string has a kg twin');
+  addEventListener('load', () => {
+    t($('#book').disabled, 'book button disabled with nothing ticked');
+    $('#list input').click();
+    t(!$('#book').disabled && $('#book').dataset.href.includes('wa.me'), 'book enabled after ticking');
+    $('#list input').click();
+    t($('#book').disabled, 'book disabled again after unticking');
+    if (!bad) console.log('selftest ok');
+  });
+}
+
+/* ---------- page ---------- */
+const $ = s => document.querySelector(s);
+let lang = 'ru', shown = {min:0, price:0}, tween = 0;
+
+function setLang(l) {
+  lang = l;
+  document.documentElement.lang = l === 'kg' ? 'ky' : 'ru';
+  document.querySelectorAll('[data-i18n]').forEach(e => e.textContent = I18N[l][e.dataset.i18n]);
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === l));
+  $('#addr').textContent = I18N[l].addrV;
+  update(true);
+  try { localStorage.setItem('lang', l); } catch (e) {}
+}
+document.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => setLang(b.dataset.lang));
+
+$('#list').innerHTML = SERVICES.map((s, i) =>
+  `<li><label class="svc"><input type="checkbox" value="${i}"><span class="box" aria-hidden="true"></span>` +
+  `<span class="nm"><b>${s.name}</b><small>${s.note}</small></span>` +
+  `<span class="meta"><span class="m" data-min="${s.min}"></span><span class="p">${fmt(s.price)}</span></span></label></li>`).join('');
+$('#addr').href = 'https://2gis.kg/bishkek/search/' + encodeURIComponent(I18N.ru.addrV);
+$('#demo').href = tgLink('Здравствуйте! Хочу такой же сайт для своего магазина.');
+
+const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const picked = () => [...document.querySelectorAll('#list input:checked')].map(i => SERVICES[+i.value]);
+function paint(min, price) {
+  const u = I18N[lang];
+  $('#t-price').textContent = fmt(Math.round(price));
+  $('#t-time').textContent = fmtDuration(Math.round(min), u);
+}
+/* the total counts up or down to the new value, so you see what the last tick changed */
+function update(instant) {
+  const u = I18N[lang], list = picked(), t = totals(list), ok = list.length > 0;
+  document.querySelectorAll('.m').forEach(e => e.textContent = fmtDuration(+e.dataset.min, u));
+  $('#none').hidden = ok; $('#t-price').hidden = $('#t-time').hidden = !ok;
+  const b = $('#book');
+  b.disabled = !ok; b.textContent = ok ? u.book : u.pick;
+  b.dataset.href = ok ? waLink(bookingMessage({services: list})) : '';
+  $('#sr').textContent = ok ? `${fmtDuration(t.min, u)}, ${fmt(t.price)}` : '';
+  cancelAnimationFrame(tween);
+  if (instant || reduced()) { shown = t; paint(t.min, t.price); return; }
+  const from = shown, t0 = performance.now();
+  const step = now => {
+    const k = Math.min(1, (now - t0) / 280), e = 1 - Math.pow(1 - k, 3);
+    shown = {min: from.min + (t.min - from.min) * e, price: from.price + (t.price - from.price) * e};
+    paint(shown.min, shown.price);
+    if (k < 1) tween = requestAnimationFrame(step);
+  };
+  tween = requestAnimationFrame(step);
+}
+$('#list').addEventListener('change', () => update());
+$('#book').onclick = e => { const h = e.currentTarget.dataset.href; if (h) window.open(h, '_blank', 'noopener'); };
+
+/* Cormorant has no ө ү ң in some builds: if so, Kyrgyz text falls back to the sans (see .serif rule) */
+document.fonts.load("500 40px 'Cormorant Garamond'", 'өүң').catch(() => {}).then(() => {
+  const c = document.createElement('canvas').getContext('2d');
+  const w = (f, s) => { c.font = `500 40px ${f}`; return c.measureText(s).width; };
+  const has = ['ө', 'ү', 'ң'].every(g => w("'Cormorant Garamond',monospace", g) !== w('monospace', g));
+  if (!has) document.documentElement.classList.add('kg-sans');
+});
+
+let saved = null;
+try { saved = localStorage.getItem('lang'); } catch (e) {}
+setLang(saved === 'kg' ? 'kg' : 'ru');
+</script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>TOO WEAR: одежда на каждый день</title>
+<meta name="description" content="Худи, футболки и кепки. Выберите размер и цвет, заказ уйдёт в Telegram.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --haze:#E9EEF6; --white:#fff; --ink:#0F1A2A; --line:#CFD6E2; --tg:#2AABEE;
+  --muted:#4B586B; /* ink, lightened: 7:1 on white */
+  --font:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--haze);-webkit-text-size-adjust:100%}
+body{margin:0;font:400 16px/1.45 var(--font);color:var(--ink);-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+img{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.app{max-width:480px;margin:0 auto;min-height:100dvh;background:var(--white);border-inline:1px solid var(--line)}
+@media (max-width:480px){.app{border-inline:0}}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;
+  height:60px;padding:0 16px;background:rgba(255,255,255,.86);backdrop-filter:blur(14px) saturate(160%);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);border-bottom:1px solid var(--line)}
+.logo{font-weight:700;font-size:19px;letter-spacing:.04em}
+.lang{display:flex;background:var(--haze);border-radius:12px;padding:2px}
+.lang button{min-width:44px;height:44px;border:0;background:none;border-radius:10px;font-weight:700;font-size:14px;color:var(--muted)}
+.lang button[aria-pressed=true]{background:var(--white);color:var(--ink);box-shadow:0 1px 3px rgba(15,26,42,.18)}
+
+/* intro + grid */
+main{padding:28px 16px 8px}
+h1{margin:0;font-size:30px;line-height:1.08;letter-spacing:-.03em;font-weight:700;text-wrap:balance}
+.lead{margin:10px 0 0;color:var(--muted);max-width:32ch}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 12px;margin-top:28px;align-items:start}
+.grid>:nth-child(even){margin-top:32px}
+.tile{display:block;width:100%;padding:0;border:0;background:none;text-align:left}
+.tile .ph{display:block;aspect-ratio:4/5;border-radius:20px;overflow:hidden;background:var(--haze);
+  transition:transform 120ms ease-out}
+.tile:active .ph{transform:scale(.97)}
+.tile img{width:100%;height:100%;object-fit:cover}
+.tile b{display:block;margin-top:10px;font-size:15px;line-height:1.25;letter-spacing:-.01em}
+.tile span.pr{display:block;font-size:14px;color:var(--muted)}
+
+/* footer */
+footer{margin-top:40px;padding:24px 16px 40px;border-top:1px solid var(--line);font-size:14px}
+footer dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 16px}
+footer dt{color:var(--muted)}
+footer dd{margin:0}
+footer a{color:var(--ink);text-underline-offset:3px}
+footer a.touch,footer .demo a{display:inline-block;min-height:44px;line-height:44px;margin:-10px 0}
+footer .demo{margin:20px 0 0;color:var(--muted)}
+footer .demo a{font-weight:700}
+.credits{margin:0;padding-top:6px}
+
+/* bottom sheet */
+.scrim{position:fixed;inset:0;z-index:20;background:var(--ink);opacity:0;pointer-events:none}
+.scrim.on{pointer-events:auto}
+.sheet{position:fixed;z-index:30;left:0;right:0;bottom:-60px;margin-inline:auto;width:min(100%,480px);
+  height:calc(min(90dvh,780px) + 60px);padding-bottom:60px;display:flex;flex-direction:column;
+  background:var(--white);border-radius:28px 28px 0 0;box-shadow:0 -10px 40px rgba(15,26,42,.22);
+  transform:translate3d(0,110%,0);visibility:hidden;will-change:transform;outline:0}
+.grab{position:relative;flex:none;height:clamp(200px,40dvh,430px);touch-action:none;cursor:grab;
+  border-radius:28px 28px 0 0;overflow:hidden;background:var(--haze);user-select:none;-webkit-user-select:none}
+.grab:active{cursor:grabbing}
+.grab img{width:100%;height:100%;object-fit:cover;object-position:50% 35%;pointer-events:none;
+  transition:filter 220ms ease-out}
+.handle{position:absolute;top:8px;left:50%;width:40px;height:5px;margin-left:-20px;border-radius:3px;
+  background:rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(15,26,42,.2);z-index:1}
+.x{position:absolute;top:12px;right:12px;width:44px;height:44px;border:0;border-radius:50%;
+  background:rgba(255,255,255,.9);font-size:22px;line-height:1;display:grid;place-items:center;z-index:1}
+.s-body{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;padding:16px 16px 8px}
+.s-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.s-head h2{margin:0;font-size:22px;line-height:1.15;letter-spacing:-.02em;font-weight:700}
+.s-head p{margin:0;font-weight:700;font-size:18px;white-space:nowrap}
+.row{margin-top:18px}
+.row .lbl{display:block;font-size:14px;color:var(--muted);margin-bottom:4px}
+.row .lbl b{color:var(--ink)}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.sw{width:44px;height:44px;border:0;background:none;padding:0;display:grid;place-items:center}
+.sw i{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--c)}
+.sw[aria-pressed=true] i{box-shadow:0 0 0 2px var(--white),0 0 0 4px var(--ink)}
+.pill{min-width:56px;height:44px;padding:0 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--white);font-weight:700;font-size:15px}
+.pill:active,.sw:active{transform:scale(.96)}
+.pill[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--white)}
+.pill:disabled{background:var(--haze);border-color:var(--haze);color:var(--muted);font-weight:400;text-decoration:line-through;cursor:not-allowed}
+.note{margin:18px 0 0;font-size:14px;color:var(--muted)}
+.s-cta{flex:none;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--white)}
+.main{display:block;width:100%;height:52px;border:0;border-radius:14px;background:var(--tg);color:var(--ink);font-weight:700;font-size:16px}
+.main:active:not(:disabled){transform:scale(.985)}
+.main:disabled{background:var(--haze);color:var(--muted);cursor:not-allowed}
+
+@media (prefers-reduced-motion:reduce){
+  .tile .ph,.grab img{transition:none}
+  .pill:active,.sw:active,.tile:active .ph,.main:active{transform:none}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="bar">
+    <span class="logo">TOO WEAR</span>
+    <div class="lang" role="group" aria-label="Язык / Тил">
+      <button type="button" data-lang="ru" aria-pressed="true">RU</button>
+      <button type="button" data-lang="kg" aria-pressed="false">KG</button>
+    </div>
+  </header>
+  <main>
+    <h1 data-i18n="h1"></h1>
+    <p class="lead" data-i18n="lead"></p>
+    <div class="grid" id="grid"></div>
+  </main>
+  <footer>
+    <dl>
+      <dt data-i18n="addr"></dt>
+      <dd><a class="touch" id="addr" target="_blank" rel="noopener"></a></dd>
+      <dt data-i18n="hours"></dt>
+      <dd data-i18n="hoursV"></dd>
+      <dt>Instagram</dt>
+      <dd><a class="touch" href="#">@toowear.kg</a></dd>
+    </dl>
+    <p class="demo"><span data-i18n="demo"></span> <a id="demo" target="_blank" rel="noopener" data-i18n="demoLink"></a></p>
+    <p class="credits"><a class="touch" href="CREDITS.md" data-i18n="credits"></a></p>
+  </footer>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="s-name" tabindex="-1">
+  <div class="grab" id="grab">
+    <span class="handle"></span>
+    <img id="s-img" src="img/hoodie-zip.webp" width="960" height="1200" alt="Худи на молнии">
+    <button type="button" class="x" id="s-close" data-i18n-label="close">&times;</button>
+  </div>
+  <div class="s-body">
+    <div class="s-head"><h2 id="s-name"></h2><p id="s-price"></p></div>
+    <div class="row"><span class="lbl"><span data-i18n="color"></span>: <b id="s-cname"></b></span><div class="opts" id="s-colors"></div></div>
+    <div class="row"><span class="lbl" data-i18n="size"></span><div class="opts" id="s-sizes"></div></div>
+    <p class="note" data-i18n="note"></p>
+  </div>
+  <div class="s-cta"><button type="button" class="main" id="s-order"></button></div>
+</section>
+
+<script>
+const PHONE = '996551080110', TG = 'lat3sfx';
+
+/* Products: replace this list with the client's real ones. colors: k = key in I18N, f = CSS filter that
+   tints the same photo, img = a separate photo for that colour (if the shop has one). */
+// shortcut: only grey is shown by darkening the photo; other colours keep the photo (a tinted fake looked wrong). Add img per colour when the shop has photos.
+const TINT = {grey:'brightness(.72)'};
+const PRODUCTS = [
+  {id:'zip',   name:'Худи на молнии',    price:3900, img:'img/hoodie-zip.webp',   sizes:['S','M','L','XL'], out:['XL'],
+   colors:[{k:'white'},{k:'grey',f:TINT.grey},{k:'blue'}]},
+  {id:'print', name:'Худи с принтом',    price:3600, img:'img/hoodie-print.webp', sizes:['S','M','L','XL'], out:['S'],
+   colors:[{k:'grey'},{k:'blue'}]},
+  {id:'long',  name:'Лонгслив оверсайз', price:2200, img:'img/longsleeve.webp',   sizes:['M','L','XL'], out:[],
+   colors:[{k:'white'},{k:'grey',f:TINT.grey}]},
+  {id:'tee',   name:'Футболка базовая',  price:1400, img:'img/tee.webp',          sizes:['S','M','L','XL'], out:['S'],
+   colors:[{k:'black'},{k:'grey'}]},
+  {id:'stripe',name:'Свитшот в полоску', price:2900, img:'img/stripe.webp',       sizes:['S','M','L','XL'], out:['S','XL'],
+   colors:[{k:'grey'}]},
+  {id:'cap',   name:'Кепка с вышивкой',  price:1200, img:'img/cap.webp',          sizes:['S/M','L/XL'], out:[],
+   colors:[{k:'black'},{k:'blue'}]}
+];
+const SWATCH = {white:'#EDEBE6', grey:'#A9AFB8', black:'#141A22', blue:'#35598F'};
+
+const MSG = {hello:'Здравствуйте! Хочу заказать:', total:'Итого'}; // order messages are always Russian
+const I18N = {
+  ru:{h1:'Одежда на каждый день', lead:'Выберите вещь, размер и цвет. Заказ уйдёт нам в Telegram.',
+      color:'Цвет', size:'Размер', pickSize:'Выберите размер', order:'Оформить в Telegram', close:'Закрыть',
+      out:'нет в наличии', note:'В наличии в Бишкеке. Можно примерить в магазине.',
+      addr:'Адрес', addrV:'проспект Чуй, 154', hours:'Часы работы', hoursV:'Каждый день, 10:00–20:00',
+      credits:'Фото и лицензии', demo:'Демо-сайт. Хотите такой же для своего магазина?', demoLink:'Написать Азрету',
+      white:'Белый', grey:'Серый', black:'Чёрный', blue:'Синий'},
+  kg:{h1:'Күнүмдүк кийим', lead:'Буюм, өлчөм, түс тандаңыз. Буйрутма Telegram аркылуу барат.',
+      color:'Түс', size:'Өлчөм', pickSize:'Өлчөмдү тандаңыз', order:'Telegram аркылуу буйрутма', close:'Жабуу',
+      out:'жок', note:'Бишкекте бар. Дүкөндө өлчөп көрсөңүз болот.',
+      addr:'Дарек', addrV:'Чүй проспектиси, 154', hours:'Иш убактысы', hoursV:'Күн сайын, 10:00–20:00',
+      credits:'Сүрөттөр', demo:'Демо-сайт. Дүкөнүңүзгө ушундай сайт керекпи?', demoLink:'Азретке жазуу',
+      white:'Ак', grey:'Боз', black:'Кара', blue:'Көк'}
+};
+
+/* ---------- pure helpers (checked by ?selftest) ---------- */
+const NB = ' ';
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, NB) + NB + 'с';
+const waLink = msg => `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
+const tgLink = msg => `https://t.me/${TG}?text=${encodeURIComponent(msg)}`;
+const orderMessage = items =>
+  `${MSG.hello}\n` +
+  items.map(i => '— ' + [i.name, i.size, i.color, fmt(i.price)].filter(Boolean).join(', ')).join('\n') +
+  `\n${MSG.total}: ${fmt(items.reduce((s, i) => s + i.price, 0))}`;
+/* Where a released drag ends up: project the flick forward (Apple's decay formula), then pick the nearer snap.
+   v = px/s, positive = downwards; y = px the sheet is pulled down from open; h = sheet height. */
+const sheetSnap = (v, y, h) => y + (v / 1000) * 0.998 / (1 - 0.998) > h / 2 ? 'closed' : 'open';
+/* pulling past the open position resists more and more instead of stopping dead */
+const rubber = (over, dim) => (over * dim * 0.55) / (dim + 0.55 * Math.abs(over));
+
+if (location.search.includes('selftest')) {
+  let bad = 0;
+  const t = (ok, msg) => { if (!ok) { bad++; console.error('FAIL: ' + msg); } };
+  t(fmt(4900) === '4' + NB + '900' + NB + 'с', 'fmt');
+  t(fmt(900) === '900' + NB + 'с', 'fmt small');
+  const m = orderMessage([{name:'Худи на молнии', size:'M', color:'Белый', price:3900}, {name:'Кепка', price:1200}]);
+  t(m.includes('Худи на молнии, M, Белый, 3900'.replace('3900', fmt(3900))), 'message has name, size, colour, price');
+  t(m.split('\n').filter(l => l.startsWith('—')).length === 2 && m.endsWith('Итого: ' + fmt(5100)), 'message lines and total');
+  t(!m.includes('undefined') && !m.includes(', ,'), 'message has no empty parts');
+  t(waLink('a b').endsWith('text=a%20b') && tgLink('a b').startsWith('https://t.me/example?text=a%20b'), 'links');
+  t(sheetSnap(1500, 40, 600) === 'closed', 'fast flick down closes');
+  t(sheetSnap(50, 350, 600) === 'closed', 'slow drag past half closes');
+  t(sheetSnap(0, 80, 600) === 'open', 'short drag springs back open');
+  t(sheetSnap(-1500, 500, 600) === 'open', 'flick up opens');
+  t(rubber(100, 600) < 100 && rubber(100, 600) > 0, 'rubber band resists');
+  t(PRODUCTS.every(p => p.sizes.some(s => !p.out.includes(s))), 'every product has a size in stock');
+  t(Object.keys(I18N.ru).every(k => k in I18N.kg), 'every ru string has a kg twin');
+  if (!bad) console.log('selftest ok');
+}
+
+/* ---------- language ---------- */
+const $ = s => document.querySelector(s);
+let lang = 'ru';
+function setLang(l) {
+  lang = l;
+  document.documentElement.lang = l === 'kg' ? 'ky' : 'ru';
+  document.querySelectorAll('[data-i18n]').forEach(e => e.textContent = I18N[l][e.dataset.i18n]);
+  document.querySelectorAll('[data-i18n-label]').forEach(e => e.setAttribute('aria-label', I18N[l][e.dataset.i18nLabel]));
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === l));
+  $('#addr').textContent = I18N[l].addrV;
+  if (cur) paintSheet();
+  try { localStorage.setItem('lang', l); } catch (e) {}
+}
+document.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => setLang(b.dataset.lang));
+
+/* ---------- grid ---------- */
+$('#grid').innerHTML = PRODUCTS.map((p, i) =>
+  `<button type="button" class="tile" data-id="${p.id}"><span class="ph"><img src="${p.img}" width="960" height="1200" alt="${p.name}" ${i > 1 ? 'loading="lazy"' : ''}></span>` +
+  `<b>${p.name}</b><span class="pr">${fmt(p.price)}</span></button>`).join('');
+$('#addr').href = 'https://2gis.kg/bishkek/search/' + encodeURIComponent(I18N.ru.addrV);
+$('#demo').href = tgLink('Здравствуйте! Хочу такой же сайт для своего магазина.');
+
+/* ---------- sheet state ---------- */
+const sheet = $('#sheet'), scrim = $('#scrim'), grab = $('#grab'), app = $('#app');
+let cur = null, colorIx = 0, size = null, opener = null;
+
+function paintSheet() {
+  const p = cur, c = p.colors[colorIx], L = I18N[lang];
+  const img = $('#s-img');
+  img.src = c.img || p.img; img.alt = p.name; img.style.filter = c.f || '';
+  $('#s-name').textContent = p.name;
+  $('#s-price').textContent = fmt(p.price);
+  $('#s-cname').textContent = L[c.k];
+  $('#s-colors').innerHTML = p.colors.map((x, i) =>
+    `<button type="button" class="sw" data-i="${i}" aria-pressed="${i === colorIx}" aria-label="${L[x.k]}"><i style="--c:${SWATCH[x.k]}"></i></button>`).join('');
+  $('#s-sizes').innerHTML = p.sizes.map(s => {
+    const gone = p.out.includes(s);
+    return `<button type="button" class="pill" data-s="${s}" aria-pressed="${s === size}" ${gone ? `disabled aria-label="${s}, ${L.out}"` : ''}>${s}</button>`;
+  }).join('');
+  const ok = size !== null, btn = $('#s-order');
+  btn.disabled = !ok;
+  btn.textContent = ok ? L.order : L.pickSize;
+  btn.dataset.href = ok ? tgLink(orderMessage([{name:p.name, size, color:I18N.ru[c.k], price:p.price}])) : '';
+}
+$('#s-colors').onclick = e => { const b = e.target.closest('.sw'); if (b) { colorIx = +b.dataset.i; paintSheet(); } };
+$('#s-sizes').onclick = e => { const b = e.target.closest('.pill'); if (b && !b.disabled) { size = b.dataset.s; paintSheet(); } };
+$('#s-order').onclick = e => { const h = e.currentTarget.dataset.href; if (h) window.open(h, '_blank', 'noopener'); };
+
+/* ---------- sheet motion: y = px the sheet is pulled down from fully open (0). Always read from y, so any
+   animation can be grabbed or reversed mid-flight and carries on from where it is, with the finger's speed. ---------- */
+const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const H = () => sheet.offsetHeight;      // includes the 60px that sits below the screen edge
+const VIS = () => H() - 60;               // what you actually see when open
+let y = 0, vel = 0, raf = 0, isOpen = false;
+
+function render() {
+  sheet.style.transform = `translate3d(0,${y}px,0)`;
+  scrim.style.opacity = Math.max(0, Math.min(1, 1 - y / VIS())) * 0.45;
+}
+function settled() {
+  if (!isOpen) {
+    sheet.style.visibility = 'hidden'; app.inert = false; document.body.style.overflow = '';
+    if (opener) opener.focus({preventScroll:true});
+  }
+}
+/* damped spring (Apple: response in seconds, damping ratio); bounce only when a flick carried momentum */
+function springTo(target, v0, bouncy) {
+  cancelAnimationFrame(raf);
+  if (reduced()) { y = target; vel = 0; render(); settled(); return; }
+  const w = 2 * Math.PI / 0.32, k = w * w, c = 2 * (bouncy ? 0.8 : 1) * w;
+  vel = v0; let last = performance.now();
+  const step = now => {
+    const dt = Math.max(0, Math.min((now - last) / 1000, 0.032)); // rAF time can be a hair behind performance.now() last = now;
+    for (let n = Math.ceil(dt / 0.004), h = dt / n; n--;) { vel += (-k * (y - target) - c * vel) * h; y += vel * h; }
+    render();
+    if (Math.abs(y - target) < 0.5 && Math.abs(vel) < 10) { y = target; render(); settled(); return; }
+    raf = requestAnimationFrame(step);
+  };
+  raf = requestAnimationFrame(step);
+}
+function openSheet(p, from) {
+  cur = p; colorIx = 0; size = null; opener = from; isOpen = true;
+  if (p.sizes.length === 1 && !p.out.includes(p.sizes[0])) size = p.sizes[0];
+  paintSheet();
+  sheet.style.visibility = 'visible'; scrim.classList.add('on');
+  app.inert = true; document.body.style.overflow = 'hidden';
+  y = H(); render();
+  sheet.focus({preventScroll:true});
+  springTo(0, 0, false);
+}
+function closeSheet(v = 0, bouncy = false) {
+  if (!isOpen) return;
+  isOpen = false; scrim.classList.remove('on');
+  springTo(H(), v, bouncy);
+}
+$('#grid').onclick = e => { const t = e.target.closest('.tile'); if (t) openSheet(PRODUCTS.find(p => p.id === t.dataset.id), t); };
+scrim.onclick = () => closeSheet();
+$('#s-close').onclick = () => closeSheet();
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen) closeSheet(); });
+
+/* drag: 1:1 with the finger from wherever it was grabbed; release speed feeds the spring */
+let drag = null;
+grab.addEventListener('pointerdown', e => {
+  if (e.target.closest('button') || sheet.style.visibility !== 'visible') return;
+  cancelAnimationFrame(raf); raf = 0;
+  grab.setPointerCapture(e.pointerId);
+  drag = {y0: e.clientY, from: y, s: [[performance.now(), e.clientY]]};
+  if (!isOpen) { isOpen = true; scrim.classList.add('on'); } // grabbed while closing: it is open again until released
+});
+grab.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const raw = drag.from + e.clientY - drag.y0;
+  y = raw < 0 ? -rubber(-raw, VIS()) : raw;
+  drag.s.push([performance.now(), e.clientY]); if (drag.s.length > 8) drag.s.shift();
+  render();
+});
+function release() {
+  if (!drag) return;
+  const now = performance.now(), recent = drag.s.filter(p => now - p[0] < 100), a = recent[0] || drag.s[drag.s.length - 1], b = drag.s[drag.s.length - 1];
+  const v = b[0] > a[0] ? (b[1] - a[1]) / (b[0] - a[0]) * 1000 : 0;
+  drag = null;
+  if (sheetSnap(v, y, VIS()) === 'closed') closeSheet(v, true); else { isOpen = true; springTo(0, v, true); }
+}
+grab.addEventListener('pointerup', release);
+grab.addEventListener('pointercancel', release);
+window.addEventListener('resize', () => { if (sheet.style.visibility !== 'visible') y = H(); });
+
+let saved = null;
+try { saved = localStorage.getItem('lang'); } catch (e) {}
+setLang(saved === 'kg' ? 'kg' : 'ru');
+</script>
+</body>
+</html>

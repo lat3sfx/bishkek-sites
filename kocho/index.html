@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>KÖCHÖ: уличная одежда из контейнера на Дордое</title>
+<meta name="description" content="Демо-сайт магазина уличной одежды: дроп, размеры, заказ в WhatsApp.">
+<meta name="theme-color" content="#1F4E9C">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600;800&family=Unbounded:wght@800&display=swap">
+<style>
+:root{
+  --blue:#1F4E9C; --rib:#183F80; --rib-hi:#2A5BAD; --concrete:#D9DCDF; --ink:#141414;
+  --orange:#F26A1B; --white:#fff; --muted:#3C4148; --photo:#C2C7CC;
+  --display:'Unbounded','Onest',system-ui,sans-serif;
+  --text:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--concrete);color:var(--ink);font:400 17px/1.5 var(--text);overflow-wrap:break-word}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+/* Kyrgyz letters ө ү ң are missing in Unbounded, so Kyrgyz headings use Onest */
+.disp{font-family:var(--display);font-weight:800;letter-spacing:-.01em}
+html[lang=ky] .disp{font-family:var(--text);letter-spacing:0}
+
+/* hero: the container wall */
+.hero{
+  color:var(--white);padding:12px 0 44px;border-bottom:14px solid var(--ink);
+  background:repeating-linear-gradient(90deg,var(--rib) 0,var(--blue) 5px,var(--rib-hi) 12px,var(--blue) 19px,var(--rib) 24px);
+}
+.hero :focus-visible{outline-color:var(--white)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.where{font-size:15px;font-weight:600}
+.lang{display:flex;gap:6px}
+.lang button{min-width:48px;height:44px;border:2px solid var(--white);background:transparent;color:var(--white);font-weight:600;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--white);color:var(--blue)}
+.name{margin:clamp(40px,9vh,88px) 0 12px;font:800 min(18vw,190px)/.95 var(--display);letter-spacing:-.02em;white-space:nowrap}
+.sub{margin:0 0 28px;font-size:clamp(18px,2.4vw,24px);max-width:24ch;line-height:1.3}
+.plate{display:inline-block;background:var(--concrete);color:var(--ink);padding:14px 18px 16px;transform:rotate(-1.2deg);max-width:100%}
+.plate p{margin:0;font-weight:600;font-size:15px}
+.cd{display:block;margin-top:2px;font-size:clamp(24px,6.6vw,56px);line-height:1.1;white-space:nowrap;font-variant-numeric:tabular-nums}
+.btn{display:flex;align-items:center;justify-content:center;min-height:52px;padding:0 24px;background:var(--orange);color:var(--ink);font-weight:600;font-size:17px;text-decoration:none;border:0;cursor:pointer;text-align:center}
+.btn[aria-disabled=true]{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink);cursor:not-allowed}
+.hero .btn{display:inline-flex;margin-top:28px}
+
+/* grid */
+.drop{padding:44px 0 56px}
+h2{margin:0 0 24px;font-size:clamp(24px,4vw,40px);line-height:1.1}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:30px 14px;margin:0;padding:0;list-style:none}
+@media(min-width:760px){.grid{grid-template-columns:repeat(4,1fr);gap:40px 22px}}
+.card{display:block;width:100%;padding:0;border:0;background:none;text-align:left;cursor:pointer}
+.card:active .ph img{transform:scale(.98)}
+.ph{position:relative;background:var(--photo)}
+.ph img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;transition:transform .15s}
+.tagw{position:absolute;left:-6px;bottom:14px;transform:rotate(var(--r));filter:drop-shadow(1px 2px 0 rgba(20,20,20,.35))}
+.tag{display:block;background:var(--orange);color:var(--ink);padding:7px 14px 7px 10px;font:800 15px/1.1 var(--display);white-space:nowrap;clip-path:polygon(0 0,100% 0,100% 62%,90% 100%,0 100%)}
+.pname{display:block;margin-top:14px;font-weight:600;line-height:1.25}
+
+/* find us */
+.find{padding:0 0 56px}
+.find .wrap{display:grid;gap:20px}
+.find img{width:100%;height:auto;background:var(--photo)}
+.find p{margin:0 0 20px;max-width:34ch}
+.find .btn{display:inline-flex;background:transparent;border:2px solid var(--ink)}
+@media(min-width:760px){.find .wrap{grid-template-columns:7fr 5fr;gap:40px;align-items:center}}
+
+footer{background:var(--ink);color:var(--concrete);padding:36px 0 40px;font-size:15px}
+footer .wrap{display:grid;gap:10px}
+footer p{margin:0}
+footer a{color:var(--white);display:inline-block;padding:10px 0}
+footer .demo{margin-top:14px;font-size:17px}
+footer .demo a{display:inline;padding:0}
+
+/* product panel */
+dialog{position:fixed;inset:auto 0 0 0;margin:0;width:100%;max-width:none;max-height:92dvh;padding:0;border:0;background:var(--concrete);color:var(--ink);overflow:auto;border-top:14px solid var(--blue)}
+dialog::backdrop{background:rgba(20,20,20,.62)}
+@media(min-width:760px){dialog{inset:0 0 0 auto;width:480px;height:100dvh;max-height:none;border-top:0;border-left:14px solid var(--blue)}}
+@media(prefers-reduced-motion:no-preference){
+  dialog[open]{animation:in .22s ease-out}
+  @keyframes in{from{transform:translateY(48px);opacity:0}}
+  @media(min-width:760px){@keyframes in{from{transform:translateX(48px);opacity:0}}}
+}
+.pin{padding:16px 16px 28px;max-width:480px;margin:0 auto}
+.x{display:block;margin:0 0 12px auto;width:48px;height:48px;border:2px solid var(--ink);background:transparent;cursor:pointer;padding:0}
+.x svg{display:block;margin:auto}
+.pin .ph img{aspect-ratio:4/5;max-height:52dvh;width:100%;object-fit:cover}
+.thumbs{display:flex;gap:10px;margin-top:10px}
+.thumbs button{width:64px;height:64px;padding:0;border:2px solid transparent;background:var(--photo);cursor:pointer}
+.thumbs button[aria-pressed=true]{border-color:var(--ink)}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+.pin h2{margin:22px 0 18px;font-size:24px}
+.lbl{margin:0 0 10px;font-weight:600}
+.sizes{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
+.chip{min-width:48px;height:48px;padding:0 14px;border:2px solid var(--ink);background:var(--white);font-weight:600;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.chip:disabled{cursor:not-allowed;color:#5A5F66;border:2px dashed #5A5F66;text-decoration:line-through;
+  background:linear-gradient(to top right,transparent calc(50% - 1px),#5A5F66 calc(50% - 1px),#5A5F66 calc(50% + 1px),transparent calc(50% + 1px)),var(--white)}
+.pin .btn{width:100%}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="top">
+      <span class="where" data-i18n="addr"></span>
+      <div class="lang" role="group" aria-label="Язык / Тил">
+        <button type="button" data-lang="ru">RU</button>
+        <button type="button" data-lang="kg">KG</button>
+      </div>
+    </div>
+    <h1 class="name">KÖCHÖ</h1>
+    <p class="sub disp" data-i18n="tagline"></p>
+    <div class="plate">
+      <p data-i18n="dropIn"></p>
+      <span class="cd disp" id="cd" role="timer"></span>
+    </div>
+    <br>
+    <a class="btn" href="#drop" data-i18n="seeDrop"></a>
+  </div>
+</header>
+
+<main>
+  <section class="drop" id="drop" aria-labelledby="dropH">
+    <div class="wrap">
+      <h2 class="disp" id="dropH" data-i18n="gridTitle"></h2>
+      <ul class="grid" id="grid"></ul>
+    </div>
+  </section>
+
+  <section class="find" aria-labelledby="findH">
+    <div class="wrap">
+      <img src="img/dordoy.webp" width="1200" height="342" loading="lazy" alt="Проход между зелёными контейнерами на рынке Дордой">
+      <div>
+        <h2 class="disp" id="findH" data-i18n="findTitle"></h2>
+        <p data-i18n="findText"></p>
+        <a class="btn" href="https://2gis.kg/bishkek/search/%D0%94%D0%BE%D1%80%D0%B4%D0%BE%D0%B9%20%D0%BA%D0%BE%D0%BD%D1%82%D0%B5%D0%B9%D0%BD%D0%B5%D1%80%20312" data-i18n="map"></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><a href="https://2gis.kg/bishkek/search/%D0%94%D0%BE%D1%80%D0%B4%D0%BE%D0%B9%20%D0%BA%D0%BE%D0%BD%D1%82%D0%B5%D0%B9%D0%BD%D0%B5%D1%80%20312" data-i18n="addr"></a></p>
+    <p data-i18n="hours"></p>
+    <p><a href="#">Instagram</a></p>
+    <p><a href="CREDITS.md" data-i18n="credits"></a></p>
+    <p class="demo"><span data-i18n="demo"></span> <a id="demo" href="#" data-i18n="demoLink"></a></p>
+  </div>
+</footer>
+
+<dialog id="panel" aria-labelledby="pName">
+  <div class="pin">
+    <button type="button" class="x" id="close" data-i18n-label="close"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3l14 14M17 3L3 17" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></button>
+    <div class="ph" id="pPh"></div>
+    <div class="thumbs" id="pThumbs"></div>
+    <h2 class="disp" id="pName"></h2>
+    <p class="lbl" id="sizeLbl" data-i18n="size"></p>
+    <div class="sizes" id="pSizes" role="group" aria-labelledby="sizeLbl"></div>
+    <a class="btn" id="wa" role="link"></a>
+  </div>
+</dialog>
+
+<script>
+const PHONE = '996551080110', TG = 'lat3sfx';
+
+// Products live here: replace this array with a client's real items.
+// out = sizes that are sold out. imgs = [file, width, height] (first one is the main photo).
+const PRODUCTS = [
+  {id:'hoodie',  name:'Худи оверсайз',     price:4900, sizes:['S','M','L','XL'],    out:['S'],       imgs:[['hoodie-black',750,1000]]},
+  {id:'rabbit',  name:'Худи «Зайцы»',      price:5200, sizes:['S','M','L','XL'],    out:['XL'],      imgs:[['hoodie-white',900,1200]]},
+  {id:'jacket',  name:'Джинсовка',         price:4500, sizes:['S','M','L','XL'],    out:['M','XL'],  imgs:[['jacket-denim',1000,892],['jacket-denim2',1200,800]]},
+  {id:'jeans',   name:'Джинсы баги',       price:3900, sizes:['30','32','34','36'], out:['30'],      imgs:[['jeans',900,1200]]},
+  {id:'cargo',   name:'Карго хаки',        price:3700, sizes:['S','M','L','XL'],    out:[],          imgs:[['cargo',798,1200]]},
+  {id:'sneaker', name:'Кроссовки Run',     price:6900, sizes:['40','41','42','43','44'], out:['41','44'], imgs:[['sneakers',900,1200]]},
+  {id:'cap',     name:'Кепка с вышивкой',  price:1500, sizes:['ONE'],               out:[],          imgs:[['cap',1200,1200]]},
+  {id:'puffer',  name:'Пуховик глянец',    price:8900, sizes:['S','M','L','XL'],    out:['S','L'],   imgs:[['puffer',900,1200]]}
+];
+
+const I18N = {
+  ru:{tagline:'Уличная одежда из контейнера на Дордое', dropIn:'Новый дроп через', dayU:'д', seeDrop:'Смотреть дроп',
+      gridTitle:'В этом дропе', size:'Размер', pickSize:'Выберите размер', order:'Заказать в WhatsApp', close:'Закрыть',
+      one:'Один размер', soldOut:'нет в наличии', addr:'Дордой, контейнер 312', hours:'Каждый день 9:00–18:00',
+      findTitle:'Где нас найти', findText:'Мы в контейнере 312 на Дордое. Приходите мерить или пишите в WhatsApp: ответим в тот же день.',
+      map:'Открыть в 2GIS', credits:'Фото: авторы и лицензии',
+      demo:'Демо-сайт. Хотите такой же для своего магазина?', demoLink:'Написать Азрету'},
+  kg:{tagline:'Дордойдогу контейнерден көчө кийими', dropIn:'Жаңы дропко чейин', dayU:'к', seeDrop:'Дропту көрүү',
+      gridTitle:'Бул дропто', size:'Өлчөм', pickSize:'Өлчөмдү тандаңыз', order:'WhatsApp аркылуу заказ', close:'Жабуу',
+      one:'Бир өлчөм', soldOut:'жок', addr:'Дордой, 312-контейнер', hours:'Күн сайын 9:00–18:00',
+      findTitle:'Бизди табуу', findText:'Биз Дордойдогу 312-контейнердебиз. Келип өлчөп көрүңүз же WhatsApp\'ка жазыңыз.',
+      map:'2GIS\'те ачуу', credits:'Сүрөттөр жана лицензиялар',
+      demo:'Демо-сайт. Дүкөнүңүзгө ушундайын кааласаңыз?', demoLink:'Азретке жазуу'}
+};
+
+// ---- helpers (same names and shapes in every sample site) ----
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' с';
+const waLink = msg => `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
+function orderMessage(items){
+  if(!items.length) return '';
+  const lines = items.map(i => '— ' + [i.name, i.size, i.color, fmt(i.price)].filter(Boolean).join(', '));
+  return 'Здравствуйте! Хочу заказать:\n' + lines.join('\n') + '\nИтого: ' + fmt(items.reduce((s,i) => s + i.price, 0));
+}
+function fmtCountdown(ms, d = 'д'){
+  ms = Math.max(0, ms);
+  const p = n => String(n).padStart(2, '0');
+  return `${Math.floor(ms/864e5)} ${d} ${p(Math.floor(ms/36e5)%24)}:${p(Math.floor(ms/6e4)%60)}:${p(Math.floor(ms/1e3)%60)}`;
+}
+
+// ---- self-test: open the page with ?selftest ----
+if(location.search.includes('selftest')){
+  let bad = 0;
+  const t = (c, m) => { console.assert(c, m); if(!c) bad++; };
+  t(fmt(4900) === '4 900 с', 'fmt 4900');
+  t(fmt(950) === '950 с', 'fmt 950');
+  t(fmtCountdown(2*864e5 + 14*36e5 + 33*6e4 + 5e3) === '2 д 14:33:05', 'fmtCountdown');
+  t(fmtCountdown(-1) === '0 д 00:00:00', 'fmtCountdown negative');
+  const m = orderMessage([{name:'Худи оверсайз', size:'M', price:4900}]);
+  t(m.includes('Худи оверсайз, M'), 'hoodie in M');
+  t(m.endsWith('Итого: 4 900 с'), 'total');
+  t(orderMessage([]) === '', 'empty order sends nothing');
+  t(decodeURIComponent(waLink(m).split('text=')[1]) === m, 'waLink round trip');
+  t(PRODUCTS.every(p => p.sizes.some(s => !p.out.includes(s))), 'every product has a size in stock');
+  if(!bad) console.log('selftest ok');
+}
+
+// ---- language ----
+let lang = 'ru';
+function setLang(l){
+  lang = I18N[l] ? l : 'ru';
+  document.documentElement.lang = lang === 'kg' ? 'ky' : 'ru';
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = I18N[lang][el.dataset.i18n]);
+  document.querySelectorAll('[data-i18n-label]').forEach(el => el.setAttribute('aria-label', I18N[lang][el.dataset.i18nLabel]));
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang));
+  try{ localStorage.setItem('lang', lang); }catch(e){}
+  tick(); if(cur) renderPanel();
+}
+
+// ---- drop countdown: 3 days ahead, 18:00 ----
+const DROP = (() => { const d = new Date(); d.setDate(d.getDate() + 3); d.setHours(18,0,0,0); return +d; })();
+const cd = document.getElementById('cd');
+function tick(){ cd.textContent = fmtCountdown(DROP - Date.now(), I18N[lang].dayU); }
+
+// ---- grid ----
+const ROT = [-4,3,-2,5,-5,2,-3,4];
+document.getElementById('grid').innerHTML = PRODUCTS.map((p,i) => {
+  const [f,w,h] = p.imgs[0];
+  return `<li><button type="button" class="card" data-id="${p.id}">
+    <span class="ph"><img src="img/${f}.webp" width="${w}" height="${h}" loading="lazy" alt="${p.name}">
+    <span class="tagw" style="--r:${ROT[i]}deg"><span class="tag">${fmt(p.price)}</span></span></span>
+    <span class="pname">${p.name}</span></button></li>`;
+}).join('');
+
+// ---- product panel ----
+const panel = document.getElementById('panel'), wa = document.getElementById('wa');
+let cur = null, size = null, shot = 0;
+function renderPanel(){
+  const p = cur, tr = I18N[lang], [f,w,h] = p.imgs[shot];
+  document.getElementById('pPh').innerHTML = `<img src="img/${f}.webp" width="${w}" height="${h}" alt="${p.name}"><span class="tagw" style="--r:-3deg"><span class="tag">${fmt(p.price)}</span></span>`;
+  document.getElementById('pName').textContent = p.name;
+  const th = document.getElementById('pThumbs');
+  th.innerHTML = p.imgs.length < 2 ? '' : p.imgs.map((m,i) => `<button type="button" data-shot="${i}" aria-pressed="${i===shot}" aria-label="${p.name} ${i+1}"><img src="img/${m[0]}.webp" alt=""></button>`).join('');
+  document.getElementById('pSizes').innerHTML = p.sizes.map(s => {
+    const gone = p.out.includes(s), label = s === 'ONE' ? tr.one : s;
+    return `<button type="button" class="chip" data-size="${s}" aria-pressed="${s===size}" ${gone ? `disabled aria-label="${label}, ${tr.soldOut}"` : ''}>${label}</button>`;
+  }).join('');
+  if(size){
+    wa.href = waLink(orderMessage([{name:p.name, size:size === 'ONE' ? '' : size, price:p.price}]));
+    wa.textContent = tr.order; wa.removeAttribute('aria-disabled');
+  }else{
+    wa.removeAttribute('href'); wa.textContent = tr.pickSize; wa.setAttribute('aria-disabled', 'true');
+  }
+}
+function openPanel(id){
+  cur = PRODUCTS.find(p => p.id === id); shot = 0;
+  const free = cur.sizes.filter(s => !cur.out.includes(s));
+  size = free.length === 1 ? free[0] : null; // one size in stock: no choice to make
+  renderPanel(); panel.showModal();
+}
+document.getElementById('grid').addEventListener('click', e => { const b = e.target.closest('.card'); if(b) openPanel(b.dataset.id); });
+panel.addEventListener('click', e => {
+  if(e.target === panel || e.target.closest('#close')) return panel.close();
+  const c = e.target.closest('.chip'), t = e.target.closest('[data-shot]');
+  if(c && !c.disabled){ size = c.dataset.size; renderPanel(); }
+  if(t){ shot = +t.dataset.shot; renderPanel(); }
+});
+wa.addEventListener('click', e => { if(!size) e.preventDefault(); });
+panel.addEventListener('close', () => { cur = null; });
+
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+document.getElementById('demo').href = waLink('Здравствуйте! Посмотрел демо-сайт KÖCHÖ. Хочу такой же для своего магазина.');
+let saved = 'ru'; try{ saved = localStorage.getItem('lang') || 'ru'; }catch(e){}
+setLang(saved);
+setInterval(tick, 1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>BOZ: одежда, сшитая в Бишкеке</title>
+<meta name="description" content="Демо-сайт: лукбук бишкекского бренда одежды. Нажмите на точку на фото и соберите свой образ.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&family=Prata&display=swap">
+<style>
+:root{--snow:#F1F3F2;--mist:#C6CDD3;--slate:#4B5869;--ink:#1D2433;--red:#A3262A;--hh:60px}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--snow);color:var(--ink);font:400 1rem/1.6 Manrope,system-ui,sans-serif}
+h1,h2,.brand,.pn,.cap b{font-family:Prata,Georgia,serif;font-weight:400}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+img{display:block}
+.live{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* header */
+header{position:sticky;top:0;z-index:5;height:var(--hh);display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 16px;background:var(--snow);border-bottom:1px solid var(--mist)}
+.brand{font-size:1.5rem;letter-spacing:.1em;text-decoration:none}
+.tools{display:flex;align-items:center;gap:2px}
+.lang{display:flex}
+.lang button{min-width:44px;min-height:44px;font-weight:600;font-size:.875rem;color:var(--slate)}
+.lang button[aria-pressed=true]{color:var(--ink);text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:2px}
+.bagbtn{min-height:44px;padding:0 8px;white-space:nowrap;font-size:.875rem;font-weight:600;display:flex;align-items:center;gap:8px;border:1px solid var(--ink)}
+.bagbtn b{min-width:22px;height:22px;border-radius:11px;background:var(--red);color:#fff;font-size:.8125rem;line-height:22px;text-align:center}
+
+/* hero */
+.hero{display:flex;flex-direction:column}
+.hero .shot{width:100%;aspect-ratio:4/5}
+.hero-text{padding:28px 16px 48px}
+h1{font-size:clamp(3.4rem,15vw,7rem);line-height:.98;letter-spacing:-.015em}
+.lead{margin-top:20px;max-width:34ch;font-size:1.125rem}
+.hint{margin-top:16px;max-width:34ch;color:var(--slate)}
+
+/* shot with hotspots */
+.shot{position:relative;background:var(--mist);overflow:hidden}
+.shot img{width:100%;height:100%;object-fit:cover}
+.dot{position:absolute;width:44px;height:44px;transform:translate(-50%,-50%);z-index:1}
+.dot::before{content:"";position:absolute;inset:13px;border-radius:50%;background:var(--snow);border:2px solid var(--ink);box-shadow:0 0 0 5px rgba(241,243,242,.45);transition:background .15s}
+.dot.on::before{background:var(--red);border-color:#fff}
+.dot:focus-visible{outline-offset:-4px;border-radius:50%}
+.hero .dot::after{content:"";position:absolute;inset:13px;border-radius:50%;border:2px solid var(--snow);animation:ping 1.6s ease-out 1.2s 3 both}
+@keyframes ping{from{transform:scale(1);opacity:.9}to{transform:scale(2.6);opacity:0}}
+.pop{position:absolute;z-index:3;width:min(260px,calc(100% - 16px));padding:16px;background:var(--snow);border-radius:2px;box-shadow:0 12px 32px rgba(29,36,51,.35);animation:pop .15s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}}
+.pop .x{position:absolute;top:0;right:0;width:44px;height:44px;font-size:1.5rem;line-height:1}
+.pn{font-size:1.125rem;line-height:1.3;padding-right:36px}
+.pp{font-weight:600;margin:4px 0 12px}
+.sz{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.sz button{min-width:44px;min-height:44px;border:1px solid var(--slate);font-weight:600}
+.sz button[aria-pressed=true]{background:var(--ink);color:var(--snow);border-color:var(--ink)}
+.sz button:disabled{cursor:default}
+.one{color:var(--slate);margin-bottom:12px}
+.add{width:100%;min-height:48px;background:var(--red);color:#fff;font-weight:600}
+.add:disabled{background:var(--mist);color:var(--slate);cursor:default}
+
+/* looks */
+section{padding:64px 0}
+.wrap{padding-inline:16px;max-width:1200px;margin:0 auto}
+h2{font-size:clamp(2rem,6vw,3rem);line-height:1.1}
+.looks-head{display:flex;align-items:end;justify-content:space-between;gap:16px;max-width:1200px;margin:0 auto;padding:0 16px}
+.looks-head p{margin-top:8px;color:var(--slate);max-width:44ch}
+.nav{display:none;gap:8px}
+.nav button{width:44px;height:44px;border:1px solid var(--ink);display:grid;place-items:center}
+.row{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:32px 16px 16px;scroll-padding:0 16px;scrollbar-color:var(--slate) var(--mist)}
+.look{flex:0 0 auto;scroll-snap-align:start}
+.look .shot{--lh:min(440px,92vw);height:var(--lh);width:calc(var(--lh)*var(--r))}
+.cap{padding-top:12px}
+.cap b{display:block;font-size:1.25rem;line-height:1.2}
+.cap span{color:var(--slate);font-size:.9375rem}
+
+/* range, about, sizes */
+.range{padding:0}
+.range img{width:100%;height:min(62vw,460px);object-fit:cover}
+.range p{padding:12px 16px 0;max-width:1200px;margin:0 auto;color:var(--slate)}
+.about{display:grid;gap:28px;align-items:center}
+.about img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;background:var(--mist)}
+.about p{margin-top:16px;max-width:52ch}
+table{border-collapse:collapse;margin-top:24px;width:100%;max-width:520px;font-variant-numeric:tabular-nums}
+th,td{padding:12px 8px;text-align:left;border-bottom:1px solid var(--mist)}
+th{font-weight:600;color:var(--slate);font-size:.875rem}
+td:first-child{font-weight:600}
+.sizes p{margin-top:12px;color:var(--slate);max-width:52ch}
+
+/* footer */
+footer{background:var(--ink);color:var(--snow);padding:56px 16px 40px}
+footer .in{max-width:1200px;margin:0 auto;display:grid;gap:32px}
+footer h2{font-size:2rem}
+footer dl{display:grid;gap:16px}
+footer dt{font-weight:600}
+footer dd{color:#D5DAE0}
+footer a{text-underline-offset:3px}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+.btn{display:inline-flex;align-items:center;min-height:48px;padding:0 20px;font-weight:600;text-decoration:none;border:1px solid var(--snow)}
+.btn.main{background:var(--red);border-color:var(--red);color:#fff}
+.small{margin-top:40px;padding-top:20px;border-top:1px solid #3a4457;font-size:.875rem;color:#D5DAE0;display:flex;flex-wrap:wrap;gap:8px 24px;max-width:1200px;margin-inline:auto}
+
+/* bag dialog */
+dialog{margin:auto auto 0;width:100%;max-width:480px;border:0;background:var(--snow);color:var(--ink);padding:0}
+dialog::backdrop{background:rgba(29,36,51,.55)}
+dialog .in{padding:24px 16px 20px}
+dialog .x{position:absolute;top:4px;right:4px;width:44px;height:44px;font-size:1.5rem}
+dialog h2{font-size:1.75rem;padding-right:44px}
+#bagBody ul{list-style:none;padding:0;margin:16px 0}
+#bagBody li{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--mist)}
+#bagBody li span:first-child{flex:1}
+#bagBody li button{min-height:44px;padding:0 8px;color:var(--red);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.tot{display:flex;justify-content:space-between;font-weight:600;font-size:1.125rem;margin-bottom:8px}
+.note{color:var(--slate);font-size:.9375rem;margin-bottom:12px}
+.send{display:grid;gap:8px}
+.send .btn{justify-content:center;border-color:var(--ink)}
+.send .btn.main{border-color:var(--red)}
+
+@media(min-width:600px){dialog{margin:auto}}
+@media(min-width:900px){
+  :root{--hh:64px}
+  .brand{font-size:1.75rem}
+  .bagbtn{font-size:1rem;padding:0 12px}
+  .hero{display:grid;grid-template-columns:1fr auto;--h:calc(100svh - var(--hh))}
+  .hero .shot{order:2;height:var(--h);width:calc(var(--h)*.8);min-height:560px;min-width:448px}
+  .hero-text{display:flex;flex-direction:column;justify-content:space-between;padding:56px 56px 56px 48px}
+  .nav{display:flex}
+  .row{padding-left:max(16px,calc((100% - 1200px)/2 + 16px));scroll-padding-left:max(16px,calc((100% - 1200px)/2 + 16px))}
+  .about{grid-template-columns:7fr 5fr;gap:56px}
+  footer .in{grid-template-columns:1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="#top" aria-label="BOZ">BOZ</a>
+  <div class="tools">
+    <div class="lang" role="group" aria-label="Язык / Тил">
+      <button data-lang="ru" aria-pressed="true">RU</button><button data-lang="kg" aria-pressed="false">KG</button>
+    </div>
+    <button class="bagbtn" id="bagBtn" aria-haspopup="dialog"><span data-i18n="bag">Мой образ</span><b id="cnt" hidden>0</b></button>
+  </div>
+</header>
+<div class="live" id="live" role="status"></div>
+
+<main id="top">
+  <section class="hero" style="padding:0">
+    <div id="heroShot" style="display:contents"></div>
+    <div class="hero-text">
+      <h1 data-i18n="h1">Ала-Тоо, осень</h1>
+      <div>
+        <p class="lead" data-i18n="lead"></p>
+        <p class="hint" data-i18n="hint"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="looks" aria-labelledby="looksH">
+    <div class="looks-head">
+      <div>
+        <h2 id="looksH" data-i18n="looks">Образы сезона</h2>
+      </div>
+      <div class="nav">
+        <button data-dir="-1" data-i18n-aria="prev" aria-label="Назад"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4 6 10l6 6"/></svg></button>
+        <button data-dir="1" data-i18n-aria="next" aria-label="Вперёд"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 4 6 6-6 6"/></svg></button>
+      </div>
+    </div>
+    <div class="row" id="row" tabindex="0" role="region" data-i18n-aria="looks" aria-label="Образы сезона"></div>
+  </section>
+
+  <section class="range" aria-hidden="false">
+    <img src="img/range.webp" width="1200" height="760" loading="lazy" alt="" data-i18n-alt="altRange" style="background:var(--mist)">
+    <p data-i18n="rangeCap"></p>
+  </section>
+
+  <section class="wrap about">
+    <img src="img/atelier.webp" width="1200" height="800" loading="lazy" alt="" data-i18n-alt="altAtelier">
+    <div>
+      <h2 data-i18n="aboutH">Шьём в Бишкеке</h2>
+      <p data-i18n="about"></p>
+    </div>
+  </section>
+
+  <section class="wrap sizes">
+    <h2 data-i18n="sizesH">Размеры, см</h2>
+    <table>
+      <thead><tr><th data-i18n="th0">Размер</th><th data-i18n="th1">Грудь</th><th data-i18n="th2">Талия</th><th data-i18n="th3">Бёдра</th></tr></thead>
+      <tbody>
+        <tr><td>XS</td><td>80–84</td><td>62–66</td><td>86–90</td></tr>
+        <tr><td>S</td><td>84–88</td><td>66–70</td><td>90–94</td></tr>
+        <tr><td>M</td><td>88–92</td><td>70–74</td><td>94–98</td></tr>
+        <tr><td>L</td><td>92–96</td><td>74–78</td><td>98–102</td></tr>
+        <tr><td>XL</td><td>96–100</td><td>78–82</td><td>102–106</td></tr>
+      </tbody>
+    </table>
+    <p data-i18n="sizesNote"></p>
+  </section>
+</main>
+
+<footer>
+  <div class="in">
+    <div>
+      <h2 data-i18n="contact">Контакты</h2>
+      <p style="margin-top:12px;color:#D5DAE0;max-width:40ch" data-i18n="fit"></p>
+      <div class="btns">
+        <a class="btn main" id="fWa" href="#" data-i18n="writeWa">Написать в WhatsApp</a>
+        <a class="btn" id="fTg" href="#" data-i18n="writeTg">Написать в Telegram</a>
+      </div>
+    </div>
+    <dl>
+      <div><dt data-i18n="addrL">Адрес</dt><dd><a id="map" href="#" data-i18n="addr"></a></dd></div>
+      <div><dt data-i18n="hoursL">Часы работы</dt><dd data-i18n="hours"></dd></div>
+      <div><dt>Instagram</dt><dd><a href="#">@boz.bishkek</a></dd></div>
+    </dl>
+  </div>
+  <div class="small">
+    <a href="CREDITS.md" data-i18n="credits">Авторы фото</a>
+    <span><span data-i18n="demo"></span> <a id="demoLink" href="#" data-i18n="demoLink"></a></span>
+  </div>
+</footer>
+
+<dialog id="bag" aria-labelledby="bagT">
+  <div class="in">
+    <button class="x" id="bagX" data-i18n-aria="close" aria-label="Закрыть">×</button>
+    <h2 id="bagT" data-i18n="bag">Мой образ</h2>
+    <div id="bagBody"></div>
+  </div>
+</dialog>
+
+<script>
+const PHONE = '996551080110', TG = 'lat3sfx';
+
+// All shop data lives here: replace with a real client's looks, items, prices.
+// x, y = hotspot position in % of the photo (photo shown uncropped, so dots stay on the garment).
+const LOOKS = [
+  {img:'hero', w:960, h:1200, name:'Туман', items:[
+    {id:'ushanka', name:'Шапка-ушанка из фетра', price:2200, sizes:[], x:50, y:30},
+    {id:'snud', name:'Снуд из мериноса', price:1800, sizes:[], x:48, y:55},
+    {id:'sukno', name:'Короткое пальто из сукна', price:11900, sizes:['S','M','L','XL'], x:36, y:84}]},
+  {img:'look-fell', w:960, h:1200, name:'Клетка и шерсть', items:[
+    {id:'pompon', name:'Шапка с помпоном', price:1600, sizes:[], x:56, y:50},
+    {id:'check-scarf', name:'Шарф в клетку', price:2400, sizes:[], x:44, y:72},
+    {id:'black-coat', name:'Чёрное пальто прямого кроя', price:12500, sizes:['S','M','L'], x:38, y:90}]},
+  {img:'look-red', w:824, h:1200, name:'Бордо на перевале', items:[
+    {id:'bordo', name:'Хлопковая куртка, бордо', price:7900, sizes:['S','M','L','XL'], x:49, y:64},
+    {id:'bag', name:'Сумка из холста и кожи', price:4300, sizes:[], x:43, y:80},
+    {id:'jeans', name:'Джинсы прямые', price:4600, sizes:['30','32','34','36'], x:51, y:91}]},
+  {img:'look-check', w:800, h:1200, name:'Гусиная лапка', items:[
+    {id:'houndstooth', name:'Пальто «гусиная лапка»', price:10800, sizes:['XS','S','M','L'], x:48, y:44},
+    {id:'rib-dress', name:'Платье-миди из рибаны', price:5200, sizes:['XS','S','M','L'], x:50, y:68}]},
+  {img:'look-sun', w:960, h:1200, name:'Закат в шарфе', items:[
+    {id:'wine-coat', name:'Пальто, винный цвет', price:11200, sizes:['S','M','L'], x:20, y:82},
+    {id:'fringe', name:'Шарф с бахромой', price:2700, sizes:[], x:47, y:56},
+    {id:'gloves', name:'Кожаные перчатки', price:2900, sizes:['S','M','L'], x:29, y:51}]},
+  {img:'look-fur', w:960, h:1200, name:'Снег и мех', items:[
+    {id:'beanie', name:'Шапка вязаная в полоску', price:1500, sizes:[], x:52, y:36},
+    {id:'fur-coat', name:'Куртка с меховым воротником', price:13800, sizes:['S','M','L'], x:47, y:72}]},
+];
+
+const I18N = {
+  ru:{
+    h1:'Ала-Тоо, осень', lead:'Шьём пальто, шапки и шарфы в Бишкеке. Тёплые вещи для туманных дней у гор.',
+    hint:'Нажмите на точку на фото: покажем вещь, цену и размеры.', looks:'Образы сезона', items:'вещи',
+    bag:'Мой образ', close:'Закрыть', prev:'Назад', next:'Вперёд', size:'Размер', one:'Один размер', pick:'Выберите размер',
+    add:'Добавить в мой образ', rm:'Убрать из образа', rmShort:'Убрать', total:'Итого',
+    empty:'Пока пусто. Нажмите на точку на фото и добавьте вещь.',
+    note:'Откроется чат с готовым сообщением. Оплату и доставку обсудим в переписке.',
+    wa:'Заказать в WhatsApp', tg:'Заказать в Telegram', count:'В образе вещей: ',
+    rangeCap:'Ала-Тоо за городом. Цвета коллекции взяты оттуда: снег, глина, сухая трава.',
+    aboutH:'Шьём в Бишкеке',
+    about:'Мастерская на втором этаже, шесть швей. Берём шерсть и сукно, в которых тепло с ноября по март. Партия не больше сорока вещей, поэтому размеры заканчиваются. Рукава и длину подгоним бесплатно.',
+    sizesH:'Размеры, см', th0:'Размер', th1:'Грудь', th2:'Талия', th3:'Бёдра',
+    sizesNote:'Если вы между двумя размерами, берите больший: крой свободный.',
+    contact:'Контакты', fit:'Примерка по записи, в мастерской. Напишите, и мы подберём время.',
+    writeWa:'Написать в WhatsApp', writeTg:'Написать в Telegram',
+    addrL:'Адрес', addr:'Бишкек, ул. Ибраимова 112, 2 этаж', hoursL:'Часы работы', hours:'Пн–сб 11:00–19:00, вс выходной',
+    credits:'Авторы фото', demo:'Демо-сайт. Хотите такой же для своего магазина?', demoLink:'Написать Азрету',
+    msgHi:'Здравствуйте! Хочу записаться на примерку.', msgDemo:'Здравствуйте, Азрет! Хочу такой же сайт для своего магазина.',
+    alt0:'Девушка в синем пальто, меховой шапке и сером снуде на фоне тумана',
+    alt1:'Девушка в чёрном пальто, вязаной шапке и клетчатом шарфе смотрит на холмы',
+    alt2:'Мужчина в бордовой куртке с холщовой сумкой стоит на горном склоне',
+    alt3:'Девушка в пальто «гусиная лапка» и охристом вязаном платье идёт по дороге',
+    alt4:'Девушка в бордовом пальто и сером шарфе с бахромой на закате',
+    alt5:'Девушка со спины в вязаной шапке и куртке с меховым воротником у снежного озера',
+    altRange:'Заснеженные горы Тянь-Шаня и осенний луг со стадом',
+    altAtelier:'Бежевый вязаный свитер на деревянном столе'},
+  kg:{
+    h1:'Ала-Тоо, күз', lead:'Бишкекте тигилген жылуу кийим.',
+    hint:'Сүрөттөгү чекитти басыңыз: буюм, баа жана өлчөм.', looks:'Сезондун образдары', items:'буюм',
+    bag:'Менин образым', close:'Жабуу', prev:'Артка', next:'Алдыга', size:'Өлчөм', one:'Бир өлчөм', pick:'Өлчөмдү тандаңыз',
+    add:'Образга кошуу', rm:'Образдан алып салуу', rmShort:'Алып салуу', total:'Бардыгы',
+    empty:'Азырынча бош. Сүрөттөгү чекитти басып, буюм кошуңуз.',
+    note:'Даяр билдирүү менен чат ачылат. Төлөм жана жеткирүү — жазышууда.',
+    wa:'WhatsApp\'ка жөнөтүү', tg:'Telegram\'га жөнөтүү', count:'Образдагы буюм: ',
+    rangeCap:'Ала-Тоо шаардан тышкары. Жыйнактын түстөрү ошол жактан: кар, чопо, кургак чөп.',
+    aboutH:'Бишкекте тигебиз',
+    about:'Устакана экинчи кабатта, алты тигүүчү иштейт. Пальто партия менен тигилет, ошондуктан өлчөмдөр тез бүтөт. Жеңин жана узундугун акысыз тууралайбыз.',
+    sizesH:'Өлчөмдөр, см', th0:'Өлчөм', th1:'Төш', th2:'Бел', th3:'Жамбаш',
+    sizesNote:'Эки өлчөмдүн ортосунда болсоңуз, чоңун алыңыз: кесими эркин.',
+    contact:'Байланыш', fit:'Өлчөп көрүү — жазылуу боюнча, устаканада. Жазыңыз, убакыт тандайбыз.',
+    writeWa:'WhatsApp\'ка жазуу', writeTg:'Telegram\'га жазуу',
+    addrL:'Дарек', addr:'Бишкек, Ибраимов көчөсү 112, 2-кабат', hoursL:'Иш убактысы', hours:'Дш–Иш 11:00–19:00, Жк дем алыш',
+    credits:'Сүрөт авторлору', demo:'Демо-сайт. Дүкөнүңүзгө ушундай сайт керекпи?', demoLink:'Азретке жазуу',
+    msgHi:'Здравствуйте! Хочу записаться на примерку.', msgDemo:'Здравствуйте, Азрет! Хочу такой же сайт для своего магазина.',
+    alt0:'Көк пальто жана жүндүү шапка кийген кыз тумандын алдында',
+    alt1:'Кара пальто, токулган шапка жана клеткалуу шарф кийген кыз',
+    alt2:'Бордо куртка кийген, сумкалуу эркек тоо боорунда турат',
+    alt3:'Пальто жана токулган көйнөк кийген кыз жолдо баратат',
+    alt4:'Бордо пальто жана бахромалуу шарф кийген кыз күн батарда',
+    alt5:'Токулган шапка жана жүн жакалуу куртка кийген кыз артынан, карлуу көлдүн жанында',
+    altRange:'Тянь-Шандын карлуу тоолору жана күздөгү жайыт',
+    altAtelier:'Столдогу токулган свитер'},
+};
+
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' с';
+const waLink = msg => `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
+const tgLink = msg => `https://t.me/${TG}?text=${encodeURIComponent(msg)}`;
+const orderMessage = items =>
+  'Здравствуйте! Хочу заказать:\n' +
+  items.map(i => `— ${[i.name, i.size, i.color].filter(Boolean).join(', ')}, ${fmt(i.price)}`).join('\n') +
+  `\nИтого: ${fmt(items.reduce((s, i) => s + i.price, 0))}`;
+// one piece per look item: adding the same item again swaps its size
+const addItem = (cart, item) => [...cart.filter(c => c.id !== item.id), item];
+const removeItem = (cart, id) => cart.filter(c => c.id !== id);
+
+if (location.search.includes('selftest')) {
+  let bad = 0;
+  const T = (ok, msg) => { console.assert(ok, msg); if (!ok) bad++; };
+  const coat = {id:'a', name:'Пальто', size:'M', price:11900}, scarf = {id:'b', name:'Шарф', price:2400};
+  const two = addItem(addItem([], coat), scarf), msg = orderMessage(two);
+  T(fmt(4900) === '4 900 с', 'fmt');
+  T(msg.includes('— Пальто, M, 11 900 с') && msg.includes('— Шарф, 2 400 с'), 'both items in message');
+  T(msg.split('\n').filter(l => l.startsWith('—')).length === 2, 'two lines');
+  T(msg.endsWith('Итого: 14 300 с'), 'total of two');
+  T(two.length === 2 && removeItem(two, 'a').length === 1, 'removing an item drops the count');
+  T(orderMessage(removeItem(two, 'a')).endsWith('Итого: 2 400 с'), 'total after remove');
+  T(addItem(two, {...coat, size:'L'}).length === 2, 'same item twice keeps one piece');
+  T(waLink('a b').endsWith('text=a%20b') && tgLink('a b').startsWith('https://t.me/example?text=a%20b'), 'links');
+  const ids = LOOKS.flatMap(l => l.items.map(i => i.id));
+  T(new Set(ids).size === ids.length, 'item ids unique');
+  T(LOOKS.every((l, i) => l.items.length >= 2 && I18N.ru['alt' + i] && I18N.kg['alt' + i]), 'looks have items and alt text');
+  T(Object.keys(I18N.ru).every(k => k in I18N.kg), 'every RU key has a KG string');
+  if (!bad) console.log('selftest ok');
+}
+
+// ---------- UI ----------
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+let lang = 'ru', cart = [], cur = null;
+const t = k => I18N[lang][k];
+
+const shot = (L, i, style) => `<div class="shot" data-look="${i}" style="${style}">
+  <img src="img/${L.img}.webp" width="${L.w}" height="${L.h}" alt="" data-i18n-alt="alt${i}" ${i ? 'loading="lazy"' : 'fetchpriority="high"'}>
+  ${L.items.map((it, j) => `<button class="dot" data-i="${j}" style="left:${it.x}%;top:${it.y}%" aria-haspopup="dialog" aria-expanded="false" aria-label="${it.name}, ${fmt(it.price)}"></button>`).join('')}</div>`;
+
+$('#heroShot').outerHTML = shot(LOOKS[0], 0, '--r:.8');
+$('#row').innerHTML = LOOKS.slice(1).map((L, k) => `<figure class="look">${shot(L, k + 1, `--r:${L.w / L.h}`)}
+  <figcaption class="cap"><b>${L.name}</b><span>${L.items.length} <span data-i18n="items"></span></span></figcaption></figure>`).join('');
+
+function setLang(l) {
+  lang = l;
+  document.documentElement.lang = l === 'kg' ? 'ky' : 'ru';
+  $$('[data-i18n]').forEach(e => e.textContent = t(e.dataset.i18n));
+  $$('[data-i18n-aria]').forEach(e => e.setAttribute('aria-label', t(e.dataset.i18nAria)));
+  $$('[data-i18n-alt]').forEach(e => e.alt = t(e.dataset.i18nAlt));
+  $$('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === l));
+  $('#map').href = 'https://2gis.kg/bishkek/search/' + encodeURIComponent(I18N.ru.addr);
+  $('#fWa').href = waLink(I18N.ru.msgHi);
+  $('#fTg').href = tgLink(I18N.ru.msgHi);
+  $('#demoLink').href = waLink(I18N.ru.msgDemo);
+  closePop();
+  drawBag();
+  try { localStorage.setItem('lang', l); } catch (e) {}
+}
+
+// hotspot popover: one element, moved into whichever photo is active
+const pop = document.createElement('div');
+pop.className = 'pop'; pop.hidden = true; pop.tabIndex = -1; pop.setAttribute('role', 'dialog');
+
+function openPop(dot) {
+  closePop();
+  const box = dot.parentElement, it = LOOKS[+box.dataset.look].items[+dot.dataset.i], inCart = cart.find(c => c.id === it.id);
+  cur = {dot, it, size: inCart ? inCart.size : it.sizes.length ? null : ''};
+  dot.classList.add('on'); dot.setAttribute('aria-expanded', 'true');
+  box.appendChild(pop); pop.hidden = false;
+  pop.setAttribute('aria-label', it.name);
+  drawPop(); pop.focus({preventScroll: true});
+  pop.scrollIntoView({block: 'nearest', inline: 'nearest'});
+}
+function drawPop() {
+  const {it, size} = cur, inCart = cart.some(c => c.id === it.id);
+  pop.innerHTML = `<button class="x" aria-label="${t('close')}">×</button><p class="pn">${it.name}</p><p class="pp">${fmt(it.price)}</p>` +
+    (it.sizes.length
+      ? `<div class="sz" role="group" aria-label="${t('size')}">${it.sizes.map(s => `<button data-s="${s}" aria-pressed="${s === size}" ${inCart ? 'disabled' : ''}>${s}</button>`).join('')}</div>`
+      : `<p class="one">${t('one')}</p>`) +
+    `<button class="add" ${!inCart && size === null ? 'disabled' : ''}>${inCart ? t('rm') : size === null ? t('pick') : t('add')}</button>`;
+  const box = pop.parentElement.getBoundingClientRect(), d = cur.dot.getBoundingClientRect();
+  const dx = d.left + d.width / 2 - box.left, dy = d.top + d.height / 2 - box.top;
+  const x = Math.min(Math.max(dx - pop.offsetWidth / 2, 8), box.width - pop.offsetWidth - 8);
+  const below = dy + 26 + pop.offsetHeight <= box.height - 8;
+  pop.style.left = x + 'px';
+  pop.style.top = Math.max(8, below ? dy + 26 : dy - 26 - pop.offsetHeight) + 'px';
+}
+function closePop(refocus) {
+  if (!cur) return;
+  cur.dot.classList.remove('on'); cur.dot.setAttribute('aria-expanded', 'false');
+  if (refocus) cur.dot.focus();
+  pop.hidden = true; cur = null;
+}
+pop.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.classList.contains('x')) return closePop(true);
+  if (b.dataset.s) { cur.size = b.dataset.s; return drawPop(); }
+  if (b.classList.contains('add')) {
+    const {it, size} = cur;
+    cart = cart.some(c => c.id === it.id) ? removeItem(cart, it.id) : addItem(cart, {id: it.id, name: it.name, size: size || undefined, price: it.price});
+    if (!cart.some(c => c.id === it.id) && it.sizes.length) cur.size = null;
+    drawPop(); drawBag();
+  }
+});
+document.addEventListener('click', e => {
+  const d = e.target.closest('.dot');
+  if (d) return cur && cur.dot === d ? closePop() : openPop(d);
+  if (cur && !e.composedPath().includes(pop)) closePop(); // path, not contains(): pop re-renders its buttons
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePop(true); });
+
+// cart ("Мой образ")
+const bag = $('#bag');
+function drawBag() {
+  $('#cnt').hidden = !cart.length; $('#cnt').textContent = cart.length;
+  $('#live').textContent = t('count') + cart.length;
+  const total = cart.reduce((s, i) => s + i.price, 0);
+  $('#bagBody').innerHTML = cart.length
+    ? `<ul>${cart.map(i => `<li><span>${i.name}${i.size ? ', ' + i.size : ''}</span><span>${fmt(i.price)}</span><button data-rm="${i.id}">${t('rmShort')}</button></li>`).join('')}</ul>
+       <p class="tot"><span>${t('total')}</span><span>${fmt(total)}</span></p><p class="note">${t('note')}</p>
+       <div class="send"><a class="btn main" target="_blank" rel="noopener" href="${waLink(orderMessage(cart))}">${t('wa')}</a>
+       <a class="btn" target="_blank" rel="noopener" href="${tgLink(orderMessage(cart))}">${t('tg')}</a></div>`
+    : `<p style="margin:16px 0;color:var(--slate)">${t('empty')}</p>`;
+}
+$('#bagBtn').onclick = () => { closePop(); bag.showModal(); };
+$('#bagX').onclick = () => bag.close();
+bag.addEventListener('click', e => { if (e.target === bag) bag.close(); });
+$('#bagBody').addEventListener('click', e => {
+  const id = e.target.dataset.rm; if (id) { cart = removeItem(cart, id); drawBag(); }
+});
+
+$$('[data-lang]').forEach(b => b.onclick = () => setLang(b.dataset.lang));
+$$('[data-dir]').forEach(b => b.onclick = () => $('#row').scrollBy({left: b.dataset.dir * 600, behavior: 'smooth'}));
+let saved = 'ru'; try { saved = localStorage.getItem('lang') || 'ru'; } catch (e) {}
+setLang(saved === 'kg' ? 'kg' : 'ru');
+</script>
+</body>
+</html>

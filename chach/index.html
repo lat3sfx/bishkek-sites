@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ЧАЧ: барбершоп, запись онлайн</title>
+<meta name="description" content="Демо-сайт барбершопа: выберите барбера, день и время, запись уйдёт в WhatsApp.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;800&display=swap">
+<style>
+:root{--c:#CFD0CD;--l:#E3E4E1;--ink:#151515;--w:#fff;--steel:#9A9B98;--mute:#444543;--hh:60px}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:var(--hh)}
+body{background:var(--c) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .45 0 0 0 0 .45 0 0 0 0 .45 0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");color:var(--ink);font:400 1rem/1.55 Manrope,system-ui,sans-serif}
+h1,h2,h3,.brand,.btn,.nm{font-weight:800;letter-spacing:-.035em}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:inherit}
+img{display:block}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.on-ink :focus-visible,footer :focus-visible{outline-color:var(--w)}
+
+header{position:sticky;top:0;z-index:5;height:var(--hh);display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 16px;background:var(--ink);color:var(--w)}
+.brand{font-size:1.75rem;text-decoration:none;letter-spacing:-.05em}
+.tools{display:flex;align-items:center;gap:2px}
+.lang{display:flex}
+.lang button{min-width:44px;min-height:44px;font-weight:800;font-size:.875rem;color:#C9CAC7}
+.lang button[aria-pressed=true]{color:var(--w);text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;background:var(--ink);color:var(--w);text-decoration:none;border:2px solid var(--ink);font-size:1rem}
+.btn.inv{background:var(--w);color:var(--ink);border-color:var(--w)}
+.btn.sm{min-height:44px;padding:0 12px;font-size:.875rem}
+.btn:disabled{background:var(--steel);border-color:var(--steel);color:var(--ink);cursor:default}
+
+/* hero */
+.hero{background:var(--ink);color:var(--w);display:flex;flex-direction:column}
+.ht{padding:36px 16px 32px}
+h1{font-size:clamp(3rem,13.5vw,6.5rem);line-height:.92;letter-spacing:-.05em}
+.lead{margin:20px 0 28px;max-width:36ch;font-size:1.125rem;color:#E3E4E1}
+.hero img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;background:#2b2b2b}
+
+/* booking */
+section{padding:56px 0}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:16px}
+h2{font-size:clamp(2.25rem,8vw,3.75rem);line-height:.95;letter-spacing:-.045em}
+.steps{list-style:none;padding:0;display:flex;margin:28px 0 20px}
+.steps li{flex:1 1 auto;display:flex;align-items:center;gap:6px;font-size:.9375rem;font-weight:800;color:var(--mute);min-height:44px}
+.steps li::after{content:"";flex:1;min-width:10px;height:2px;background:var(--steel);margin-right:6px}
+.steps li:last-child::after{display:none}
+.steps b{width:28px;height:28px;display:grid;place-items:center;border:2px solid var(--steel);font-size:.875rem;flex:none}
+.steps .cur{color:var(--ink)}
+.steps .cur b{border-color:var(--ink)}
+.steps .done{color:var(--ink)}
+.steps .done b{background:var(--ink);border-color:var(--ink);color:var(--w)}
+.steps .done::after{background:var(--ink)}
+.bk{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.flow,.step{min-width:0}
+.flow{display:grid;gap:16px;align-content:start}
+.step{background:var(--l);padding:16px}
+.step.lock .body{opacity:.45}
+.sh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px}
+h3{font-size:1.25rem}
+.sv{color:var(--mute);font-size:.9375rem;text-align:right}
+.lockmsg{color:var(--mute);font-size:.9375rem}
+.barbers{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bc{text-align:left;background:var(--w);border:2px solid var(--w);display:flex;flex-direction:column}
+.bc img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;background:var(--steel)}
+.bc .tx{padding:10px 10px 12px}
+.nm{display:block;font-size:1.125rem;line-height:1.2}
+.sp{display:block;color:var(--mute);font-size:.875rem;line-height:1.35;margin-top:2px}
+.bc[aria-pressed=true]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.bc[aria-pressed=true] .nm::after{content:" ✓"}
+.bc.any{background:var(--ink);color:var(--w);border-color:var(--ink);justify-content:flex-end}
+.bc.any .sp{color:#D5D6D3}
+.bc.any[aria-pressed=true]{outline:3px solid var(--w);outline-offset:-7px}
+.bc.any:focus-visible{outline-color:var(--w);outline-offset:-7px}
+.days{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x proximity}
+.dc{flex:0 0 auto;width:60px;min-height:76px;background:var(--w);border:2px solid var(--w);display:flex;flex-direction:column;align-items:center;justify-content:center;scroll-snap-align:start;line-height:1.2}
+.dc small{font-size:.8125rem;color:var(--mute)}
+.dc b{font-size:1.375rem;letter-spacing:-.03em}
+.dc[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--w)}
+.dc[aria-pressed=true] small{color:#E3E4E1}
+.dc:disabled{background:transparent;border-color:var(--steel);color:var(--mute);cursor:default;opacity:.7}
+.times{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tc{min-height:44px;background:var(--w);border:2px solid var(--w);font-weight:800;font-variant-numeric:tabular-nums}
+.tc[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--w)}
+.tc:disabled{background:transparent;border-color:var(--steel);color:#6c6d6a;text-decoration:line-through;font-weight:400;cursor:default}
+.sum{background:var(--ink);color:var(--w);padding:20px 16px;align-self:start}
+.sum h3{font-size:1.5rem;margin-bottom:12px}
+.sum dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin-bottom:16px}
+.sum dt{color:#C9CAC7}
+.sum dd{font-weight:800;text-align:right}
+.sum h4{font-size:1rem;margin-bottom:8px;letter-spacing:-.02em}
+.svc{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.svc button{display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:44px;padding:0 12px;border:2px solid #5a5b59;text-align:left}
+.svc button[aria-pressed=true]{background:var(--w);color:var(--ink);border-color:var(--w);font-weight:800}
+.tot{display:flex;justify-content:space-between;font-size:1.25rem;font-weight:800;margin-bottom:14px;padding-top:14px;border-top:2px solid #5a5b59}
+.sum .btn{width:100%;background:var(--w);color:var(--ink);border-color:var(--w)}
+.sum .btn:disabled{background:#3a3b39;border-color:#3a3b39;color:#D5D6D3}
+.need,.note{margin-top:10px;font-size:.9375rem;color:#D5D6D3}
+
+/* studio + footer */
+.studio{padding-top:0}
+.studio .wrap{display:grid;gap:20px}
+.studio img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;background:var(--steel)}
+.studio p{margin-top:14px;max-width:48ch}
+footer{background:var(--ink);color:var(--w);padding:48px 16px 36px}
+footer .in{max-width:1200px;margin:0 auto;display:grid;gap:28px}
+footer h2{font-size:2.25rem}
+footer dl{display:grid;gap:14px}
+footer dt{font-weight:800}
+footer dd{color:#D5D6D3}
+footer a{text-underline-offset:3px}
+.small{max-width:1200px;margin:36px auto 0;padding-top:18px;border-top:2px solid #3a3b39;font-size:.875rem;color:#D5D6D3;display:flex;flex-wrap:wrap;gap:8px 24px}
+
+@media(min-width:480px){.times{grid-template-columns:repeat(5,1fr)}}
+@media(min-width:900px){
+  :root{--hh:64px}
+  .hero{display:grid;grid-template-columns:1fr auto;--h:calc(100svh - var(--hh));min-height:560px}
+  .hero img{height:var(--h);width:calc(var(--h)*.8);min-height:560px;aspect-ratio:auto;order:2}
+  .ht{padding:56px 48px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start}
+  .lead{margin-bottom:32px}
+  .bk{grid-template-columns:minmax(0,7fr) minmax(0,4fr)}
+  .sum{position:sticky;top:calc(var(--hh) + 16px)}
+  .barbers{grid-template-columns:repeat(4,1fr)}
+  .times{grid-template-columns:repeat(6,1fr)}
+  .studio .wrap{grid-template-columns:7fr 4fr;align-items:end;gap:48px}
+  footer .in{grid-template-columns:1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="on-ink">
+  <a class="brand" href="#top" aria-label="ЧАЧ">ЧАЧ</a>
+  <div class="tools">
+    <div class="lang" role="group" aria-label="Язык / Тил">
+      <button data-lang="ru" aria-pressed="true">RU</button><button data-lang="kg" aria-pressed="false">KG</button>
+    </div>
+    <a class="btn inv sm" href="#book" data-i18n="cta0">Записаться</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero on-ink" style="padding:0">
+    <div class="ht">
+      <h1 data-i18n="h1">Стрижка по записи</h1>
+      <div>
+        <p class="lead" data-i18n="lead"></p>
+        <a class="btn inv" href="#book" data-i18n="cta"></a>
+      </div>
+    </div>
+    <img src="img/hero.webp" width="960" height="1200" alt="" data-i18n-alt="altHero" fetchpriority="high">
+  </section>
+
+  <section id="book" class="wrap" aria-labelledby="bookH">
+    <h2 id="bookH" data-i18n="bookH">Запись</h2>
+    <ol class="steps" id="steps"></ol>
+    <div class="bk">
+      <div class="flow">
+        <div class="step" id="s1"><div class="sh"><h3 data-i18n="st1">Барбер</h3><span class="sv" id="v1"></span></div><div class="body"><div class="barbers" id="barbers"></div></div></div>
+        <div class="step" id="s2"><div class="sh"><h3 data-i18n="st2">День</h3><span class="sv" id="v2"></span></div><p class="lockmsg" id="l2" data-i18n="lock2"></p><div class="body"><div class="days" id="days"></div></div></div>
+        <div class="step" id="s3"><div class="sh"><h3 data-i18n="st3">Время</h3><span class="sv" id="v3"></span></div><p class="lockmsg" id="l3" data-i18n="lock3"></p><div class="body"><div class="times" id="times"></div></div></div>
+      </div>
+      <aside class="sum" id="sum" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <section class="studio">
+    <div class="wrap">
+      <img src="img/studio.webp" width="1200" height="800" loading="lazy" alt="" data-i18n-alt="altStudio">
+      <div>
+        <h2 data-i18n="studioH">Студия на четыре кресла</h2>
+        <p data-i18n="studioP"></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="in">
+    <div>
+      <h2 data-i18n="contact">Контакты</h2>
+      <p style="margin:12px 0 20px;color:#D5D6D3;max-width:38ch" data-i18n="walk"></p>
+      <a class="btn inv" id="fWa" href="#" data-i18n="writeWa">Написать в WhatsApp</a>
+    </div>
+    <dl>
+      <div><dt data-i18n="addrL">Адрес</dt><dd><a id="map" href="#" data-i18n="addr"></a></dd></div>
+      <div><dt data-i18n="hoursL">Часы работы</dt><dd data-i18n="hours"></dd></div>
+      <div><dt>Instagram</dt><dd><a href="#">@chach.bishkek</a></dd></div>
+    </dl>
+  </div>
+  <div class="small">
+    <a href="CREDITS.md" data-i18n="credits">Авторы фото</a>
+    <span><span data-i18n="demo"></span> <a id="demoLink" href="#" data-i18n="demoLink"></a></span>
+  </div>
+</footer>
+
+<script>
+const PHONE = '996551080110', TG = 'lat3sfx';
+
+// All shop data lives here: replace with a real client's barbers, services and prices.
+const BARBERS = [
+  {id:'azamat', name:'Азамат', img:'azamat', alt:'altAzamat', sp:'spAzamat'},
+  {id:'ermek',  name:'Эрмек',  img:'ermek',  alt:'altErmek',  sp:'spErmek'},
+  {id:'timur',  name:'Тимур',  img:'timur',  alt:'altTimur',  sp:'spTimur'},
+];
+const SERVICES = [
+  {id:'cut',  name:'Мужская стрижка', price:900, min:45},
+  {id:'beard',name:'Борода и усы', price:600, min:30},
+  {id:'razor',name:'Королевское бритьё', price:800, min:40},
+  {id:'kid',  name:'Детская стрижка', price:600, min:30},
+  {id:'grey', name:'Камуфляж седины', price:700, min:25},
+];
+// shortcut: slots are fixed 30-minute steps and ignore service length; give each service a duration-aware grid when a real shop needs it
+const SLOTS = Array.from({length:20}, (_, i) => `${String(10 + (i >> 1)).padStart(2, '0')}:${i % 2 ? '30' : '00'}`);
+
+const I18N = {
+  ru:{
+    cta0:'Записаться', h1:'Стрижка по записи', lead:'Три барбера в центре Бишкека. Выберите мастера, день и время: запись уйдёт к нам в WhatsApp.',
+    cta:'Выбрать барбера', bookH:'Запись', st1:'Барбер', st2:'День', st3:'Время',
+    any:'Любой барбер', anyNote:'Ближайшее свободное время', lock2:'Сначала выберите барбера.', lock3:'Сначала выберите день.',
+    today:'Сегодня', taken:'занято', sumH:'Ваша запись', lB:'Барбер', lD:'День', lT:'Время', dash:'не выбрано',
+    svcH:'Что делаем', total:'Итого', go:'Записаться в WhatsApp',
+    needB:'Выберите барбера.', needD:'Выберите день.', needT:'Выберите время.', needS:'Выберите услугу.',
+    note:'Откроется WhatsApp с готовым сообщением. Время подтвердим там же.', anyPick:'любой, ',
+    spAzamat:'Фейды и короткие стрижки', spErmek:'Классика и ножницы', spTimur:'Борода и бритьё',
+    studioH:'Студия на четыре кресла', studioP:'Бетон, свет и тишина. Стрижка от 45 минут, борода от 30. Инструменты стерилизуем при вас.',
+    contact:'Контакты', walk:'Хотите прийти без записи? Напишите, скажем, есть ли свободное кресло сейчас.',
+    writeWa:'Написать в WhatsApp', addrL:'Адрес', addr:'Бишкек, пр. Чуй 118, 1 этаж', hoursL:'Часы работы', hours:'Ежедневно 10:00–20:00',
+    credits:'Авторы фото', demo:'Демо-сайт. Хотите такой же для своего магазина?', demoLink:'Написать Азрету',
+    msgHi:'Здравствуйте! Хочу узнать, есть ли свободное кресло сегодня.', msgDemo:'Здравствуйте, Азрет! Хочу такой же сайт для своего магазина.',
+    dow:['вс','пн','вт','ср','чт','пт','сб'],
+    mon:['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'],
+    altHero:'Руки барбера с машинкой у затылка клиента, чёрно-белое фото',
+    altAzamat:'Барбер стрижёт расчёской и машинкой, вид сзади',
+    altErmek:'Филировочные ножницы на столе',
+    altTimur:'Руки барбера и бритва у лица клиента',
+    altStudio:'Пустая студия: два кресла перед зеркалами'},
+  kg:{
+    cta0:'Жазылуу', h1:'Чач кыркуу жазылуу менен', lead:'Бишкектин борборунда үч барбер. Барберди, күндү жана убакытты тандаңыз, жазылуу бизге WhatsApp аркылуу келет.',
+    cta:'Барберди тандоо', bookH:'Жазылуу', st1:'Барбер', st2:'Күн', st3:'Убакыт',
+    any:'Каалаган барбер', anyNote:'Эң жакын бош убакыт', lock2:'Алгач барберди тандаңыз.', lock3:'Алгач күндү тандаңыз.',
+    today:'Бүгүн', taken:'бош эмес', sumH:'Жазылууңуз', lB:'Барбер', lD:'Күн', lT:'Убакыт', dash:'тандалган жок',
+    svcH:'Кызматтар', total:'Бардыгы', go:'WhatsApp\'ка жазылуу',
+    needB:'Барберди тандаңыз.', needD:'Күндү тандаңыз.', needT:'Убакытты тандаңыз.', needS:'Кызматты тандаңыз.',
+    note:'WhatsApp даяр билдирүү менен ачылат. Убакытты ошол жерде бекитебиз.', anyPick:'каалаган, ',
+    spAzamat:'Фейд жана кыска чач', spErmek:'Классика жана кайчы', spTimur:'Сакал жана устара',
+    studioH:'Төрт отургучтуу студия', studioP:'Бетон, жарык жана тынчтык. Чач кыркуу 45 мүнөттөн, сакал 30 мүнөттөн башталат. Аспаптарды сиздин көзүңүздө тазалайбыз.',
+    contact:'Байланыш', walk:'Жазылбай келгиңиз келеби? Жазыңыз, азыр бош отургуч бар же жок экенин айтабыз.',
+    writeWa:'WhatsApp\'ка жазуу', addrL:'Дарек', addr:'Бишкек, Чүй проспектиси 118, 1-кабат', hoursL:'Иш убактысы', hours:'Күн сайын 10:00–20:00',
+    credits:'Сүрөт авторлору', demo:'Демо-сайт. Дүкөнүңүзгө ушундай сайт керекпи?', demoLink:'Азретке жазуу',
+    msgHi:'Здравствуйте! Хочу узнать, есть ли свободное кресло сегодня.', msgDemo:'Здравствуйте, Азрет! Хочу такой же сайт для своего магазина.',
+    dow:['Жк','Дш','Шш','Шр','Бш','Жм','Иш'],
+    mon:['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'],
+    altHero:'Барбердин колу кардардын ныктында машинка кармап турат, кара-ак сүрөт',
+    altAzamat:'Барбер тарак жана машинка менен чач кыркып жатат, арт жагынан',
+    altErmek:'Столдогу кайчы',
+    altTimur:'Барбердин колу жана кардардын жүзүндөгү устара',
+    altStudio:'Бош студия: күзгүлөрдүн алдында эки отургуч'},
+};
+
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' с';
+const waLink = msg => `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
+const tgLink = msg => `https://t.me/${TG}?text=${encodeURIComponent(msg)}`;
+const bookingMessage = ({services, barber, day, time}) =>
+  'Здравствуйте! Хочу записаться:\n' +
+  services.map(s => `— ${s.name}, ${fmt(s.price)}`).join('\n') +
+  (barber ? `\nБарбер: ${barber}` : '') + `\nДень: ${day}\nВремя: ${time}\nИтого: ${fmt(services.reduce((a, s) => a + s.price, 0))}`;
+
+// Fake but stable "already booked" times: same barber + day always gives the same answer.
+const hash = s => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
+const takenSlots = (barber, ymd) => {
+  const taken = SLOTS.filter(t => hash(`${barber}|${ymd}|${t}`) % 100 < 40);
+  return taken.slice(0, SLOTS.length - 6); // never fully booked: at least 6 free
+};
+const ymdOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const isPast = (ymd, t, now) => ymd === ymdOf(now) && +t.slice(0, 2) * 60 + +t.slice(3) <= now.getHours() * 60 + now.getMinutes();
+const isFree = (barber, ymd, t, now) => !isPast(ymd, t, now) &&
+  (barber === 'any' ? BARBERS.some(b => !takenSlots(b.id, ymd).includes(t)) : !takenSlots(barber, ymd).includes(t));
+const freeSlots = (barber, ymd, now) => SLOTS.filter(t => isFree(barber, ymd, t, now));
+const assign = (barber, ymd, t) => barber !== 'any' ? barber : (BARBERS.find(b => !takenSlots(b.id, ymd).includes(t)) || {}).id;
+
+if (location.search.includes('selftest')) {
+  let bad = 0;
+  const T = (ok, msg) => { console.assert(ok, msg); if (!ok) bad++; };
+  const a = takenSlots('azamat', '2026-10-22');
+  T(JSON.stringify(a) === JSON.stringify(takenSlots('azamat', '2026-10-22')), 'stable on second call');
+  const others = [takenSlots('ermek', '2026-10-22'), takenSlots('azamat', '2026-10-23'), takenSlots('timur', '2026-10-22')].map(x => x.join());
+  T(others.some(x => x !== a.join()), 'differs for another barber or day');
+  const never = BARBERS.every(b => ['2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24', '2026-10-25'].every(d => takenSlots(b.id, d).length < SLOTS.length));
+  T(never, 'never marks every slot taken');
+  const noon = new Date(2026, 9, 21, 15, 10), late = new Date(2026, 9, 21, 21, 0);
+  T(freeSlots('any', '2026-10-21', noon).every(t => t > '15:10'), 'past times not bookable today');
+  T(freeSlots('any', '2026-10-21', late).length === 0, 'nothing left after closing');
+  T(freeSlots('azamat', '2026-10-22', noon).length > 0 && freeSlots('azamat', '2026-10-22', noon).every(t => !a.includes(t)), 'future day: only free slots');
+  const t0 = freeSlots('any', '2026-10-22', noon)[0], who = assign('any', '2026-10-22', t0);
+  T(who && !takenSlots(who, '2026-10-22').includes(t0), 'any barber is free at that slot');
+  const m = bookingMessage({services: [SERVICES[0], SERVICES[1]], barber: 'Азамат', day: '22 октября, чт', time: '14:30'});
+  T(m.includes('— Мужская стрижка, 900 с') && m.includes('Барбер: Азамат') && m.includes('День: 22 октября, чт') && m.includes('Время: 14:30') && m.endsWith('Итого: 1 500 с'), 'message');
+  T(bookingMessage({services: [SERVICES[0]], day: 'x', time: 'y'}).includes('Барбер') === false, 'no barber line when none');
+  T(waLink('a b').endsWith('text=a%20b'), 'wa link');
+  T(Object.keys(I18N.ru).every(k => k in I18N.kg), 'every RU key has a KG string');
+  if (!bad) console.log('selftest ok');
+}
+
+// ---------- UI ----------
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+let lang = 'ru';
+const t = k => I18N[lang][k];
+const now = new Date();
+const DAYS = Array.from({length: 7}, (_, i) => { const d = new Date(now); d.setDate(d.getDate() + i); return {d, ymd: ymdOf(d)}; });
+const S = {barber: null, day: null, time: null, svc: ['cut']};
+const bName = id => id === 'any' ? t('any') : BARBERS.find(b => b.id === id).name;
+const dayText = (d, l) => `${d.getDate()} ${I18N[l].mon[d.getMonth()]}, ${I18N[l].dow[d.getDay()]}`;
+
+function setLang(l) {
+  lang = l;
+  document.documentElement.lang = l === 'kg' ? 'ky' : 'ru';
+  $$('[data-i18n]').forEach(e => e.textContent = t(e.dataset.i18n));
+  $$('[data-i18n-alt]').forEach(e => e.alt = t(e.dataset.i18nAlt));
+  $$('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === l));
+  $('#map').href = 'https://2gis.kg/bishkek/search/' + encodeURIComponent(I18N.ru.addr);
+  $('#fWa').href = waLink(I18N.ru.msgHi);
+  $('#demoLink').href = waLink(I18N.ru.msgDemo);
+  render();
+  try { localStorage.setItem('lang', l); } catch (e) {}
+}
+
+function render() {
+  const cur = new Date(), day = DAYS.find(x => x.ymd === S.day);
+  // keep the choice valid when the barber or the clock changes
+  if (S.barber && !(day && freeSlots(S.barber, S.day, cur).length)) {
+    const first = DAYS.find(x => freeSlots(S.barber, x.ymd, cur).length);
+    S.day = first ? first.ymd : null; S.time = null;
+  }
+  if (S.time && !isFree(S.barber, S.day, S.time, cur)) S.time = null;
+  const dd = DAYS.find(x => x.ymd === S.day), step = !S.barber ? 0 : !S.day ? 1 : !S.time ? 2 : 3;
+
+  $('#steps').innerHTML = [t('st1'), t('st2'), t('st3')].map((n, i) =>
+    `<li class="${i < step ? 'done' : i === step ? 'cur' : ''}"><b>${i < step ? '✓' : i + 1}</b>${n}</li>`).join('');
+  $('#s2').classList.toggle('lock', !S.barber); $('#s3').classList.toggle('lock', !S.day);
+  $('#l2').hidden = !!S.barber; $('#l3').hidden = !!S.day;
+  $('#v1').textContent = S.barber ? bName(S.barber) : '';
+  $('#v2').textContent = dd ? dayText(dd.d, lang) : '';
+  $('#v3').textContent = S.time || '';
+
+  $('#barbers').innerHTML = BARBERS.map(b => `<button class="bc" data-b="${b.id}" aria-pressed="${S.barber === b.id}">
+    <img src="img/${b.img}.webp" width="960" height="1200" loading="lazy" alt="${t(b.alt)}"><span class="tx"><span class="nm">${b.name}</span><span class="sp">${t(b.sp)}</span></span></button>`).join('') +
+    `<button class="bc any" data-b="any" aria-pressed="${S.barber === 'any'}"><span class="tx"><span class="nm">${t('any')}</span><span class="sp">${t('anyNote')}</span></span></button>`;
+
+  $('#days').innerHTML = DAYS.map((x, i) => {
+    const off = !S.barber || !freeSlots(S.barber, x.ymd, cur).length;
+    return `<button class="dc" data-d="${x.ymd}" aria-pressed="${S.day === x.ymd}" ${off ? 'disabled' : ''}><small>${i ? t('dow')[x.d.getDay()] : t('today')}</small><b>${x.d.getDate()}</b></button>`;
+  }).join('');
+
+  $('#times').innerHTML = !(S.barber && S.day) ? '' : SLOTS.map(s => {
+    const ok = S.barber && S.day && isFree(S.barber, S.day, s, cur);
+    return `<button class="tc" data-t="${s}" aria-pressed="${S.time === s}" ${ok ? '' : 'disabled'} ${S.day && !ok ? `aria-label="${s}, ${t('taken')}"` : ''}>${s}</button>`;
+  }).join('');
+
+  const svcs = SERVICES.filter(s => S.svc.includes(s.id)), total = svcs.reduce((a, s) => a + s.price, 0);
+  const who = S.barber && S.time ? assign(S.barber, S.day, S.time) : null;
+  const need = !S.barber ? 'needB' : !S.day ? 'needD' : !S.time ? 'needT' : !svcs.length ? 'needS' : '';
+  const link = need ? '' : waLink(bookingMessage({services: svcs, barber: BARBERS.find(b => b.id === who).name, day: dayText(dd.d, 'ru'), time: S.time}));
+  $('#sum').innerHTML = `<h3>${t('sumH')}</h3>
+    <dl><dt>${t('lB')}</dt><dd>${S.barber ? (S.barber === 'any' && who ? t('anyPick') + bName(who) : bName(S.barber)) : t('dash')}</dd>
+    <dt>${t('lD')}</dt><dd>${dd ? dayText(dd.d, lang) : t('dash')}</dd><dt>${t('lT')}</dt><dd>${S.time || t('dash')}</dd></dl>
+    <h4>${t('svcH')}</h4><div class="svc">${SERVICES.map(s => `<button data-s="${s.id}" aria-pressed="${S.svc.includes(s.id)}"><span>${s.name}</span><span>${fmt(s.price)}</span></button>`).join('')}</div>
+    <p class="tot"><span>${t('total')}</span><span>${fmt(total)}</span></p>
+    ${need ? `<button class="btn" disabled>${t('go')}</button><p class="need">${t(need)}</p>` : `<a class="btn" target="_blank" rel="noopener" href="${link}">${t('go')}</a><p class="note">${t('note')}</p>`}`;
+}
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-b],[data-d],[data-t],[data-s]'); if (!b) return;
+  if (b.dataset.b) { S.barber = b.dataset.b; S.time = null; }
+  else if (b.dataset.d) { S.day = b.dataset.d; S.time = null; }
+  else if (b.dataset.t) S.time = b.dataset.t;
+  else S.svc = S.svc.includes(b.dataset.s) ? S.svc.filter(x => x !== b.dataset.s) : [...S.svc, b.dataset.s];
+  const f = b.dataset.b ? `[data-b="${b.dataset.b}"]` : b.dataset.d ? `[data-d="${b.dataset.d}"]` : b.dataset.t ? `[data-t="${b.dataset.t}"]` : `[data-s="${b.dataset.s}"]`;
+  render(); const again = $(f); if (again) again.focus({preventScroll: true}); // render rebuilds buttons: keep keyboard focus
+});
+$$('[data-lang]').forEach(b => b.onclick = () => setLang(b.dataset.lang));
+let saved = 'ru'; try { saved = localStorage.getItem('lang') || 'ru'; } catch (e) {}
+setLang(saved === 'kg' ? 'kg' : 'ru');
+</script>
+</body>
+</html>
