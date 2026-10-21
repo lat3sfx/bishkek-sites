@@ -154,6 +154,25 @@
    "hidden": false
   },
   {
+   "id": "ppj1nym",
+   "name": "зипка",
+   "price": 5000,
+   "description": "зипка черная",
+   "images": [
+    "img/u-ppj1nym-9qi0d8.webp"
+   ],
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "XXL"
+   ],
+   "out": [],
+   "colors": [],
+   "hidden": false
+  },
+  {
    "id": "cap",
    "name": "Кепка с вышивкой",
    "price": 1200,
