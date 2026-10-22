@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>TOO WEAR: одежда на каждый день</title>
-<meta name="description" content="Худи, футболки и кепки. Выберите размер и цвет, заказ уйдёт в Telegram.">
+<meta name="description" content="Худи, футболки и кепки. Выберите размер и цвет, заказ уйдёт в WhatsApp.">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --haze:#E9EEF6; --white:#fff; --ink:#0F1A2A; --line:#CFD6E2; --tg:#2AABEE;
+  --haze:#E9EEF6; --white:#fff; --ink:#0F1A2A; --line:#CFD6E2; --wa:#25D366;
   --muted:#4B586B; /* ink, lightened: 7:1 on white */
   --font:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
 }
@@ -98,7 +98,7 @@ footer .demo a{font-weight:700}
 .demobar{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px 12px;background:#FFF3C4;color:var(--ink);font-size:14px;text-align:center}
 .demobar button{min-height:44px;padding:0 14px;border:1.5px solid var(--ink);border-radius:10px;background:var(--white);font-weight:700}
 .s-cta{flex:none;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--white)}
-.main{display:block;width:100%;height:52px;border:0;border-radius:14px;background:var(--tg);color:var(--ink);font-weight:700;font-size:16px}
+.main{display:block;width:100%;height:52px;border:0;border-radius:14px;background:var(--wa);color:#06371A;font-weight:700;font-size:16px}
 .main:active:not(:disabled){transform:scale(.985)}
 .main:disabled{background:var(--haze);color:var(--muted);cursor:not-allowed}
 
@@ -155,7 +155,7 @@ footer .demo a{font-weight:700}
 </section>
 
 <script>
-const PHONE = '996551080110', TG = 'lat3sfx';
+const PHONE = '996551080110';
 
 /* Products come from products.json (edited in /admin/). Everything shop-entered goes through esc() / okImg(). */
 let PRODUCTS = [];
@@ -163,13 +163,13 @@ const KGCOL = {'Белый':'Ак','Серый':'Боз','Чёрный':'Кар�
 
 const MSG = {hello:'Здравствуйте! Хочу заказать:', total:'Итого'}; // order messages are always Russian
 const I18N = {
-  ru:{h1:'Одежда на каждый день', lead:'Выберите вещь, размер и цвет. Заказ уйдёт нам в Telegram.',
-      color:'Цвет', size:'Размер', pickSize:'Выберите размер', order:'Оформить в Telegram', close:'Закрыть',
+  ru:{h1:'Одежда на каждый день', lead:'Выберите вещь, размер и цвет. Заказ уйдёт нам в WhatsApp.',
+      color:'Цвет', size:'Размер', pickSize:'Выберите размер', order:'Оформить в WhatsApp', close:'Закрыть',
       out:'нет в наличии', note:'В наличии в Бишкеке. Можно примерить в магазине.',
       addr:'Адрес', addrV:'проспект Чуй, 154', hours:'Часы работы', hoursV:'Каждый день, 10:00–20:00',
       credits:'Фото и лицензии', demo:'Демо-сайт. Хотите такой же для своего магазина?', demoLink:'Связаться с нами'},
-  kg:{h1:'Күнүмдүк кийим', lead:'Буюм, өлчөм, түс тандаңыз. Буйрутма Telegram аркылуу барат.',
-      color:'Түс', size:'Өлчөм', pickSize:'Өлчөмдү тандаңыз', order:'Telegram аркылуу буйрутма', close:'Жабуу',
+  kg:{h1:'Күнүмдүк кийим', lead:'Буюм, өлчөм, түс тандаңыз. Буйрутма WhatsApp аркылуу барат.',
+      color:'Түс', size:'Өлчөм', pickSize:'Өлчөмдү тандаңыз', order:'WhatsApp аркылуу буйрутма', close:'Жабуу',
       out:'жок', note:'Бишкекте бар. Дүкөндө өлчөп көрсөңүз болот.',
       addr:'Дарек', addrV:'Чүй проспектиси, 154', hours:'Иш убактысы', hoursV:'Күн сайын, 10:00–20:00',
       credits:'Сүрөттөр', demo:'Демо-сайт. Дүкөнүңүзгө ушундай сайт керекпи?', demoLink:'Биз менен байланышуу'}
@@ -179,7 +179,6 @@ const I18N = {
 const NB = ' ';
 const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, NB) + NB + 'с';
 const waLink = msg => `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
-const tgLink = msg => `https://t.me/${TG}?text=${encodeURIComponent(msg)}`;
 const orderMessage = items =>
   `${MSG.hello}\n` +
   items.map(i => '— ' + [i.name, i.size, i.color, fmt(i.price)].filter(Boolean).join(', ')).join('\n') +
@@ -217,7 +216,7 @@ function selftest() {
   t(m.includes('Худи на молнии, M, Белый, 3900'.replace('3900', fmt(3900))), 'message has name, size, colour, price');
   t(m.split('\n').filter(l => l.startsWith('—')).length === 2 && m.endsWith('Итого: ' + fmt(5100)), 'message lines and total');
   t(!m.includes('undefined') && !m.includes(', ,'), 'message has no empty parts');
-  t(waLink('a b').endsWith('text=a%20b') && tgLink('a b') === `https://t.me/${TG}?text=a%20b`, 'links');
+  t(waLink('a b').endsWith('text=a%20b'), 'links');
   t(sheetSnap(1500, 40, 600) === 'closed', 'fast flick down closes');
   t(sheetSnap(50, 350, 600) === 'closed', 'slow drag past half closes');
   t(sheetSnap(0, 80, 600) === 'open', 'short drag springs back open');
@@ -262,7 +261,7 @@ function renderGrid() {
     '<p class="err">Товаров пока нет.</p>';
 }
 $('#addr').href = 'https://2gis.kg/bishkek/search/' + encodeURIComponent(I18N.ru.addrV);
-$('#demo').href = tgLink('Здравствуйте! Хочу такой же сайт для своего магазина.');
+$('#demo').href = waLink('Здравствуйте! Хочу такой же сайт для своего магазина.');
 
 /* ---------- sheet state ---------- */
 const sheet = $('#sheet'), scrim = $('#scrim'), grab = $('#grab'), app = $('#app');
@@ -287,7 +286,7 @@ function paintSheet() {
   const ok = size !== null, btn = $('#s-order');
   btn.disabled = !ok;
   btn.textContent = ok ? L.order : L.pickSize;
-  btn.dataset.href = ok ? tgLink(orderMessage([{name:p.name, size, color:c.name, price:p.price}])) : '';
+  btn.dataset.href = ok ? waLink(orderMessage([{name:p.name, size, color:c.name, price:p.price}])) : '';
 }
 $('#s-colors').onclick = e => { const b = e.target.closest('.sw'); if (b) { colorIx = +b.dataset.i; paintSheet(); } };
 $('#s-sizes').onclick = e => { const b = e.target.closest('.pill'); if (b && !b.disabled) { size = b.dataset.s; paintSheet(); } };

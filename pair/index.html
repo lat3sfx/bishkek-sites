@@ -111,7 +111,7 @@ footer .demo{color:var(--ink);font-weight:600}
   </div>
 </div>
 <script>
-const PHONE = '996551080110', TG = 'lat3sfx';
+const PHONE = '996551080110';
 
 // shop data: replace with the client's stock
 const PRODUCTS = [
@@ -160,7 +160,6 @@ let lang = 'ru';
 const t = k => I18N[lang][k];
 const fmt = n => n.toLocaleString('ru-RU').replace(/\s/g, ' ') + ' с';
 const waLink = msg => `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
-const tgLink = msg => `https://t.me/${TG}?text=${encodeURIComponent(msg)}`;
 const orderMessage = items => 'Здравствуйте! Хочу заказать:\n' +
   items.map(i => '— ' + [i.name, i.size, i.color, fmt(i.price)].filter(Boolean).join(', ')).join('\n') +
   '\nИтого: ' + fmt(items.reduce((s, i) => s + i.price, 0));

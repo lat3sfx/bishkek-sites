@@ -199,7 +199,7 @@ footer a{text-underline-offset:3px}
 </footer>
 
 <script>
-const PHONE = '996551080110', TG = 'lat3sfx';
+const PHONE = '996551080110';
 
 // All shop data lives here: replace with a real client's barbers, services and prices.
 const BARBERS = [
@@ -264,7 +264,6 @@ const I18N = {
 
 const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' с';
 const waLink = msg => `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
-const tgLink = msg => `https://t.me/${TG}?text=${encodeURIComponent(msg)}`;
 const bookingMessage = ({services, barber, day, time}) =>
   'Здравствуйте! Хочу записаться:\n' +
   services.map(s => `— ${s.name}, ${fmt(s.price)}`).join('\n') +

@@ -209,7 +209,6 @@ dialog h2{font-size:1.75rem;padding-right:44px}
       <p style="margin-top:12px;color:#D5DAE0;max-width:40ch" data-i18n="fit"></p>
       <div class="btns">
         <a class="btn main" id="fWa" href="#" data-i18n="writeWa">Написать в WhatsApp</a>
-        <a class="btn" id="fTg" href="#" data-i18n="writeTg">Написать в Telegram</a>
       </div>
     </div>
     <dl>
@@ -233,7 +232,7 @@ dialog h2{font-size:1.75rem;padding-right:44px}
 </dialog>
 
 <script>
-const PHONE = '996551080110', TG = 'lat3sfx';
+const PHONE = '996551080110';
 
 // All shop data lives here: replace with a real client's looks, items, prices.
 // x, y = hotspot position in % of the photo (photo shown uncropped, so dots stay on the garment).
@@ -270,14 +269,14 @@ const I18N = {
     add:'Добавить в мой образ', rm:'Убрать из образа', rmShort:'Убрать', total:'Итого',
     empty:'Пока пусто. Нажмите на точку на фото и добавьте вещь.',
     note:'Откроется чат с готовым сообщением. Оплату и доставку обсудим в переписке.',
-    wa:'Заказать в WhatsApp', tg:'Заказать в Telegram', count:'В образе вещей: ',
+    wa:'Заказать в WhatsApp', count:'В образе вещей: ',
     rangeCap:'Ала-Тоо за городом. Цвета коллекции взяты оттуда: снег, глина, сухая трава.',
     aboutH:'Шьём в Бишкеке',
     about:'Мастерская на втором этаже, шесть швей. Берём шерсть и сукно, в которых тепло с ноября по март. Партия не больше сорока вещей, поэтому размеры заканчиваются. Рукава и длину подгоним бесплатно.',
     sizesH:'Размеры, см', th0:'Размер', th1:'Грудь', th2:'Талия', th3:'Бёдра',
     sizesNote:'Если вы между двумя размерами, берите больший: крой свободный.',
     contact:'Контакты', fit:'Примерка по записи, в мастерской. Напишите, и мы подберём время.',
-    writeWa:'Написать в WhatsApp', writeTg:'Написать в Telegram',
+    writeWa:'Написать в WhatsApp',
     addrL:'Адрес', addr:'Бишкек, ул. Ибраимова 112, 2 этаж', hoursL:'Часы работы', hours:'Пн–сб 11:00–19:00, вс выходной',
     credits:'Авторы фото', demo:'Демо-сайт. Хотите такой же для своего магазина?', demoLink:'Связаться с нами',
     msgHi:'Здравствуйте! Хочу записаться на примерку.', msgDemo:'Здравствуйте! Хочу такой же сайт для своего магазина.',
@@ -296,14 +295,14 @@ const I18N = {
     add:'Образга кошуу', rm:'Образдан алып салуу', rmShort:'Алып салуу', total:'Бардыгы',
     empty:'Азырынча бош. Сүрөттөгү чекитти басып, буюм кошуңуз.',
     note:'Даяр билдирүү менен чат ачылат. Төлөм жана жеткирүү — жазышууда.',
-    wa:'WhatsApp\'ка жөнөтүү', tg:'Telegram\'га жөнөтүү', count:'Образдагы буюм: ',
+    wa:'WhatsApp\'ка жөнөтүү', count:'Образдагы буюм: ',
     rangeCap:'Ала-Тоо шаардан тышкары. Жыйнактын түстөрү ошол жактан: кар, чопо, кургак чөп.',
     aboutH:'Бишкекте тигебиз',
     about:'Устакана экинчи кабатта, алты тигүүчү иштейт. Пальто партия менен тигилет, ошондуктан өлчөмдөр тез бүтөт. Жеңин жана узундугун акысыз тууралайбыз.',
     sizesH:'Өлчөмдөр, см', th0:'Өлчөм', th1:'Төш', th2:'Бел', th3:'Жамбаш',
     sizesNote:'Эки өлчөмдүн ортосунда болсоңуз, чоңун алыңыз: кесими эркин.',
     contact:'Байланыш', fit:'Өлчөп көрүү — жазылуу боюнча, устаканада. Жазыңыз, убакыт тандайбыз.',
-    writeWa:'WhatsApp\'ка жазуу', writeTg:'Telegram\'га жазуу',
+    writeWa:'WhatsApp\'ка жазуу',
     addrL:'Дарек', addr:'Бишкек, Ибраимов көчөсү 112, 2-кабат', hoursL:'Иш убактысы', hours:'Дш–Иш 11:00–19:00, Жк дем алыш',
     credits:'Сүрөт авторлору', demo:'Демо-сайт. Дүкөнүңүзгө ушундай сайт керекпи?', demoLink:'Биз менен байланышуу',
     msgHi:'Здравствуйте! Хочу записаться на примерку.', msgDemo:'Здравствуйте! Хочу такой же сайт для своего магазина.',
@@ -319,7 +318,6 @@ const I18N = {
 
 const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' с';
 const waLink = msg => `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
-const tgLink = msg => `https://t.me/${TG}?text=${encodeURIComponent(msg)}`;
 const orderMessage = items =>
   'Здравствуйте! Хочу заказать:\n' +
   items.map(i => `— ${[i.name, i.size, i.color].filter(Boolean).join(', ')}, ${fmt(i.price)}`).join('\n') +
@@ -340,7 +338,7 @@ if (location.search.includes('selftest')) {
   T(two.length === 2 && removeItem(two, 'a').length === 1, 'removing an item drops the count');
   T(orderMessage(removeItem(two, 'a')).endsWith('Итого: 2 400 с'), 'total after remove');
   T(addItem(two, {...coat, size:'L'}).length === 2, 'same item twice keeps one piece');
-  T(waLink('a b').endsWith('text=a%20b') && tgLink('a b') === `https://t.me/${TG}?text=a%20b`, 'links');
+  T(waLink('a b').endsWith('text=a%20b'), 'links');
   const ids = LOOKS.flatMap(l => l.items.map(i => i.id));
   T(new Set(ids).size === ids.length, 'item ids unique');
   T(LOOKS.every((l, i) => l.items.length >= 2 && I18N.ru['alt' + i] && I18N.kg['alt' + i]), 'looks have items and alt text');
@@ -371,7 +369,6 @@ function setLang(l) {
   $$('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === l));
   $('#map').href = 'https://2gis.kg/bishkek/search/' + encodeURIComponent(I18N.ru.addr);
   $('#fWa').href = waLink(I18N.ru.msgHi);
-  $('#fTg').href = tgLink(I18N.ru.msgHi);
   $('#demoLink').href = waLink(I18N.ru.msgDemo);
   closePop();
   drawBag();
@@ -439,8 +436,7 @@ function drawBag() {
   $('#bagBody').innerHTML = cart.length
     ? `<ul>${cart.map(i => `<li><span>${i.name}${i.size ? ', ' + i.size : ''}</span><span>${fmt(i.price)}</span><button data-rm="${i.id}">${t('rmShort')}</button></li>`).join('')}</ul>
        <p class="tot"><span>${t('total')}</span><span>${fmt(total)}</span></p><p class="note">${t('note')}</p>
-       <div class="send"><a class="btn main" target="_blank" rel="noopener" href="${waLink(orderMessage(cart))}">${t('wa')}</a>
-       <a class="btn" target="_blank" rel="noopener" href="${tgLink(orderMessage(cart))}">${t('tg')}</a></div>`
+       <div class="send"><a class="btn main" target="_blank" rel="noopener" href="${waLink(orderMessage(cart))}">${t('wa')}</a></div>`
     : `<p style="margin:16px 0;color:var(--slate)">${t('empty')}</p>`;
 }
 $('#bagBtn').onclick = () => { closePop(); bag.showModal(); };

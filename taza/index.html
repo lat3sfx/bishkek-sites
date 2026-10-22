@@ -189,7 +189,7 @@ footer .demo{margin-top:6px;color:var(--muted)}
 </footer>
 
 <script>
-const PHONE = '996551080110', TG = 'lat3sfx';
+const PHONE = '996551080110';
 
 /* Services: replace this list with the client's real ones. min = minutes. */
 const SERVICES = [
@@ -222,7 +222,6 @@ const MSG = {hello:'Здравствуйте! Хочу записаться:', t
 const NB = ' ';
 const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, NB) + NB + 'с';
 const waLink = msg => `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
-const tgLink = msg => `https://t.me/${TG}?text=${encodeURIComponent(msg)}`;
 const fmtDuration = (min, u = {hrs:'ч', mins:'мин'}) => {
   const h = Math.floor(min / 60), m = min % 60;
   return [h && `${h} ${u.hrs}`, (m || !h) && `${m} ${u.mins}`].filter(Boolean).join(' ');
@@ -283,7 +282,7 @@ $('#list').innerHTML = SERVICES.map((s, i) =>
   `<span class="nm"><b>${s.name}</b><small>${s.note}</small></span>` +
   `<span class="meta"><span class="m" data-min="${s.min}"></span><span class="p">${fmt(s.price)}</span></span></label></li>`).join('');
 $('#addr').href = 'https://2gis.kg/bishkek/search/' + encodeURIComponent(I18N.ru.addrV);
-$('#demo').href = tgLink('Здравствуйте! Хочу такой же сайт для своего магазина.');
+$('#demo').href = waLink('Здравствуйте! Хочу такой же сайт для своего магазина.');
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const picked = () => [...document.querySelectorAll('#list input:checked')].map(i => SERVICES[+i.value]);
